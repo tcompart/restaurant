@@ -4,6 +4,7 @@
   "description": "Code that fit's in your head",
   "main": "app.js",
   "scripts": {
+    "build": "ncc build app.js -o dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -12,5 +13,8 @@
     "nodejs"
   ],
   "author": "Mark Seemann",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@vercel/ncc": "^0.34.0"
+  }
 }
