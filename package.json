@@ -1,0 +1,16 @@
+{
+  "name": "restaurant",
+  "version": "1.0.0",
+  "description": "Code that fit's in your head",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "code",
+    "restaurant",
+    "nodejs"
+  ],
+  "author": "Mark Seemann",
+  "license": "ISC"
+}
