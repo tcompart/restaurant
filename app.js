@@ -5,8 +5,11 @@ const port = 3000;
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World');
+  let jsonContent = JSON.stringify({
+    "msg": "Hello World"
+  });
+  res.setHeader('Content-Type', 'application/json;charset=utf-8');
+  res.end(jsonContent);
 });
 
 server.listen(port, hostname, () => {

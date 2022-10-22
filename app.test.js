@@ -9,7 +9,7 @@ describe('Restaurant', () => {
       .then(r => {
         console.log("Response: ", r);
         expect(r.status).toBe(200);
-        expect(r.data).toBe('Hello World');
+        expect(r.data).toStrictEqual({"msg": "Hello World"});
       })
     ;
   });
