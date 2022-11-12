@@ -33,8 +33,8 @@ describe('Restaurant', () => {
         expect(false).toBe(true);
       })
       .then(r => {
-        expect(r.status).toBe(200);
-        expect(r.data).toStrictEqual({"msg": "Hello World"});
+        expect(r.status).toBe(201);
+        expect(r.data).toStrictEqual({"msg": "Reservation accepted."});
       })
     ;
   })

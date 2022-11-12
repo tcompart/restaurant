@@ -1,28 +1,10 @@
-import {Reservation, ReservationImpl, ReservationRepository, Task} from './reservation';
+import {ReservationController, ReservationImpl} from './reservation';
 import {ReservationDTO} from "./reservation.dto";
-
-class ReservationController {
-    private _repository: ReservationRepository;
-    constructor(db: ReservationRepository) {
-        this._repository = db;
-    }
-
-    post(reservationDTO: ReservationDTO) {
-        this._repository.create(new ReservationImpl(new Date(2023,11,24,19,0,0), "juliad@example.net", "Julia Domna", 5))
-    }
-}
-
-class FakeDatabase extends Array<Reservation> implements ReservationRepository{
-    create(reservation: Reservation): Task {
-        this.push(reservation)
-        return Task.CompletedTask;
-    }
-
-}
+import {getReservationRepository} from "./service-injection";
 
 describe('reservation', () => {
     test(' can be written to database', () => {
-        const fakeDatabase = new FakeDatabase();
+        const fakeDatabase = getReservationRepository();
         const reservationController = new ReservationController(fakeDatabase);
 
         const reservationDTO = new ReservationDTO();
@@ -32,7 +14,7 @@ describe('reservation', () => {
         reservationDTO.quantity = 5
         reservationController.post(reservationDTO)
 
-        const expected = new ReservationImpl(new Date(2023,11,24,19,0,0), reservationDTO.email, reservationDTO.name, reservationDTO.quantity)
+        const expected = new ReservationImpl(reservationDTO.at, reservationDTO.email, reservationDTO.name, reservationDTO.quantity)
         expect(fakeDatabase).toContainEqual(expected)
     });
 });
