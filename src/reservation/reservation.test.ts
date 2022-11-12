@@ -1,10 +1,10 @@
 import {ReservationController, ReservationImpl} from './reservation';
 import {ReservationDTO} from "./reservation.dto";
-import {getReservationRepository} from "./service-injection";
+import {FakeDatabase} from "./service-injection";
 
 describe('reservation', () => {
     test(' can be written to database', () => {
-        const fakeDatabase = getReservationRepository();
+        const fakeDatabase = new FakeDatabase();
         const reservationController = new ReservationController(fakeDatabase);
 
         const reservationDTO = new ReservationDTO();
@@ -15,6 +15,6 @@ describe('reservation', () => {
         reservationController.post(reservationDTO)
 
         const expected = new ReservationImpl(reservationDTO.at, reservationDTO.email, reservationDTO.name, reservationDTO.quantity)
-        expect(fakeDatabase).toContainEqual(expected)
+        expect(fakeDatabase.at(0)).toMatchObject({at: "2023-11-24T07:00:00.000+01:00", email: "juliad@example.net", name: "Julia Domna", quantity: 5})
     });
 });
