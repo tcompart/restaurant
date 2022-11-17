@@ -10,6 +10,19 @@ export interface Reservation {
     quantity: number;
 }
 
+export class BadRequest implements Error {
+    constructor(message: string, name: string) {
+        this.message = message;
+        this.name = name;
+    }
+
+    message: string;
+    name: string;
+}
+
+const advancedFormat = require('dayjs/plugin/customParseFormat')
+dayjs.extend(advancedFormat)
+
 export class ReservationController {
     private _repository: ReservationRepository;
 
@@ -17,16 +30,28 @@ export class ReservationController {
         this._repository = db;
     }
 
-    post(reservationDTO: ReservationDTO) {
-        dayjs.locale('de')
-        const dateString = dayjs(new Date(reservationDTO.at)).format('YYYY-MM-DDThh:mm:ss.sssZ');
-        this._repository.create(new ReservationImpl(dateString, reservationDTO.email, reservationDTO.name, reservationDTO.quantity))
+    validate(date: string): boolean {
+        const format = "YYYY-MM-DD";
+        return dayjs(date, format).format(format) === date;
+    }
+
+    post(reservationDTO: ReservationDTO): Promise<Task> {
+        dayjs.locale()
+        try {
+            const localDate = reservationDTO.at.substring(0, 10);
+            if (!this.validate(localDate)) {
+                throw new Error(`${localDate} is a not valid date`);
+            }
+            const date = new Date(reservationDTO.at)
+            return this._repository.create(new ReservationImpl(date.toISOString(), reservationDTO.email, reservationDTO.name, reservationDTO.quantity));
+        } catch (e) {
+            throw new BadRequest(`invalid date defined. Outcome is '${e}'. Input was '${reservationDTO.at}'.`, "400");
+        }
     }
 }
 
 
-
-export class ReservationImpl implements Reservation{
+export class ReservationImpl implements Reservation {
     at: string;
     private createdAt: Date;
     email: string;
