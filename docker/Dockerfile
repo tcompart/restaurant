@@ -25,4 +25,4 @@ COPY --from=build /usr/src/app/prisma ./prisma/
 COPY --from=build /usr/src/app/node_modules/ ./node_modules/
 ENV NODE_ENV PROD
 EXPOSE 3000
-ENTRYPOINT ["/bin/sh", "-c" , "npx prisma deploy && node ./index.js"]
+ENTRYPOINT ["/bin/sh", "-c" , "npx prisma migrate deploy && node ./index.js"]

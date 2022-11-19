@@ -3,7 +3,7 @@ import {PrismaClient} from '.prisma/client'
 import {ReservationImpl} from "./reservation.impl";
 
 export interface Reservation {
-    at: string;
+    at: Date | string;
     email: string;
     name: string;
     quantity: number;
@@ -14,7 +14,6 @@ export class BadRequest implements Error {
         this.message = message;
         this.name = name;
     }
-
     message: string;
     name: string;
 }
@@ -32,7 +31,7 @@ export class ReservationController {
             const reservation = new ReservationImpl(reservationDTO.at, reservationDTO.email, reservationDTO.name, reservationDTO.quantity);
             return this._repository.create(reservation);
         } catch (e) {
-            throw new BadRequest(`invalid date defined. Outcome is '${e}'. Input was '${reservationDTO.at}'.`, "400");
+            throw new BadRequest(`Reservation invalid. Outcome is '${e}'.`, "400");
         }
     }
 }

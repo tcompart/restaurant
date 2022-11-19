@@ -7,7 +7,7 @@ const advancedFormat = require('dayjs/plugin/customParseFormat')
 dayjs.extend(advancedFormat)
 
 export class ReservationImpl implements Reservation {
-    at: string;
+    at: Date;
     private createdAt: Date;
     email: string;
     name: string;
@@ -20,12 +20,15 @@ export class ReservationImpl implements Reservation {
         if (!email || email === '') {
             throw new Error("email needs to be defined.");
         }
+        if (Number.isNaN(quantity) || quantity < 1) {
+            throw new Error("please give at least one person for the reservation");
+        }
         const date = new Date(at)
 
         this.createdAt = dayjs().toDate();
-        this.at = date.toISOString();
+        this.at = date;
         this.email = email;
-        this.name = name;
+        this.name = name ? name : "";
         this.quantity = quantity;
     }
 
