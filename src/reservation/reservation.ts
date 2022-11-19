@@ -1,7 +1,6 @@
-import {hashCode} from "../hashCodeHelper";
 import {ReservationDTO} from "./reservation.dto";
-import dayjs from "dayjs";
 import {PrismaClient} from '.prisma/client'
+import {ReservationImpl} from "./reservation.impl";
 
 export interface Reservation {
     at: string;
@@ -20,8 +19,6 @@ export class BadRequest implements Error {
     name: string;
 }
 
-const advancedFormat = require('dayjs/plugin/customParseFormat')
-dayjs.extend(advancedFormat)
 
 export class ReservationController {
     private _repository: ReservationRepository;
@@ -30,44 +27,13 @@ export class ReservationController {
         this._repository = db;
     }
 
-    validate(date: string): boolean {
-        const format = "YYYY-MM-DD";
-        return dayjs(date, format).format(format) === date;
-    }
-
     post(reservationDTO: ReservationDTO): Promise<Task> {
-        dayjs.locale()
         try {
-            const localDate = reservationDTO.at.substring(0, 10);
-            if (!this.validate(localDate)) {
-                throw new Error(`${localDate} is a not valid date`);
-            }
-            const date = new Date(reservationDTO.at)
-            return this._repository.create(new ReservationImpl(date.toISOString(), reservationDTO.email, reservationDTO.name, reservationDTO.quantity));
+            const reservation = new ReservationImpl(reservationDTO.at, reservationDTO.email, reservationDTO.name, reservationDTO.quantity);
+            return this._repository.create(reservation);
         } catch (e) {
             throw new BadRequest(`invalid date defined. Outcome is '${e}'. Input was '${reservationDTO.at}'.`, "400");
         }
-    }
-}
-
-
-export class ReservationImpl implements Reservation {
-    at: string;
-    private createdAt: Date;
-    email: string;
-    name: string;
-    quantity: number;
-
-    constructor(at: string, email: string, name: string, quantity: number) {
-        this.createdAt = dayjs().toDate();
-        this.at = at;
-        this.email = email;
-        this.name = name;
-        this.quantity = quantity;
-    }
-
-    get hashcode(): number {
-        return hashCode(JSON.stringify(this))
     }
 }
 

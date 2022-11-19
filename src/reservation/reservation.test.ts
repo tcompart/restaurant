@@ -1,6 +1,7 @@
-import {BadRequest, ReservationController, ReservationImpl} from './reservation';
+import {BadRequest, ReservationController} from './reservation';
 import {ReservationDTO} from "./reservation.dto";
 import {FakeDatabase} from "./service-injection";
+import {ReservationImpl} from "./reservation.impl";
 
 describe('reservation', () => {
     test(' can be written to database', () => {
@@ -20,14 +21,15 @@ describe('reservation', () => {
     });
 
     it.each([
-        new ReservationDTO('99-2343-2343:32894;:343', 'email@me.com', 'My Name', 5),
-        new ReservationDTO('hallo', 'email@me.com', 'My Name', 5),
-        new ReservationDTO('', 'email@me.com', 'My Name', 5),
-        new ReservationDTO('2023-02-31 10:00', 'email@me.com', 'My Name', 5),
-    ])('Adding reservation %p will result in %p', (reservationDto) => {
+        '99-2343-2343:32894;:343',
+        'hallo',
+        '',
+        '2023-02-31 10:00',
+    ])(' requires to fail on invalid date %p', (invalidDate) => {
+        const reservationDTO = new ReservationDTO(invalidDate, 'email@me.com', 'My Name', 5);
         const controller = new ReservationController(new FakeDatabase());
         try {
-            controller.post(reservationDto);
+            controller.post(reservationDTO);
             expect("failure").toBe(true);
         }
         catch (error) {
@@ -35,4 +37,32 @@ describe('reservation', () => {
             expect((error as BadRequest).name).toBe("400");
         }
     })
+
+    it('not allowed without emails', () => {
+        const controller = new ReservationController(new FakeDatabase());
+        try {
+            controller.post(new ReservationDTO('2023-03-11 19:00', '', 'My Name', 5));
+            expect("failure").toBe(true);
+        } catch(error) {
+            expect((error as BadRequest).message).toMatch(/email needs to be defined./);
+            expect((error as BadRequest).name).toBe("400");
+        }
+    });
+
+    describe('impl', () => {
+        it.each([
+            '99-2343-2343:32894;:343',
+            'hallo',
+            '',
+            '2023-02-31 10:00',
+        ])(' validates date as well %p', (invalidDate) => {
+            try {
+                new ReservationImpl(invalidDate, "me@email.com", "My Name", 2);
+                expect("failure").toBe(true);
+            } catch (e) {
+                expect((e as BadRequest).message).toBe(invalidDate + " is not a valid date");
+            }
+        });
+
+        })
 });
