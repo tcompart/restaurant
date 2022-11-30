@@ -14,7 +14,7 @@ export class ReservationImpl implements Reservation {
     quantity: number;
 
     constructor(at: string, email: string, name: string, quantity: number) {
-        if (!this.isValidDate(at)) {
+        if (!at || !this.isValidDate(at)) {
             throw new Error(`${at} is not a valid date`);
         }
         if (!email || email === '') {

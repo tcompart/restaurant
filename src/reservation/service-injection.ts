@@ -8,6 +8,14 @@ export class FakeDatabase extends Array<Reservation> implements ReservationRepos
         return Promise.resolve(Task.CompletedTask);
     }
 
+    getAll(): Promise<Reservation[] | null> {
+        return Promise.resolve(this);
+    }
+
+    findReservationsOnDate(at: Date): Promise<Reservation[] | null> {
+        return Promise.resolve(this.filter(r => new Date(r.at).toDateString() === at.toDateString()));
+    }
+
 }
 
 export function getReservationRepository(): ReservationRepository {
