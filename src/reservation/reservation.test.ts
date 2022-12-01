@@ -13,9 +13,7 @@ describe('reservation', () => {
         const reservationController = new ReservationController(fakeDatabase);
 
         const reservationDTO = new ReservationDTO("2023-11-24 19:00", "juliad@example.net", "Julia Domna", 5);
-        const result = await reservationController.post(reservationDTO);
-
-        const expected = new ReservationImpl(reservationDTO.at, reservationDTO.email, reservationDTO.name, reservationDTO.quantity)
+        await reservationController.post(reservationDTO);
         expect(fakeDatabase.at(0)).toMatchObject({
             at: new Date("2023-11-24 19:00"),
             email: "juliad@example.net",
