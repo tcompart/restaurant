@@ -8,6 +8,7 @@ console.log(`The connection URL is ${process.env.DATABASE_URL}`)
 
 
 const app = express()
+app.disable("x-powered-by");
 app.use(bodyParser.json())
 const port = 3000;
 
