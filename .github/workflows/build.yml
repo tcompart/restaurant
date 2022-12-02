@@ -24,8 +24,7 @@ jobs:
           npm install -g dotenv
       # build and test the apps
       - name: build and test
-        shell: bash
-        run: ./start_locally.sh
+        run: npm run ci
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
