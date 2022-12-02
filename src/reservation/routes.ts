@@ -3,7 +3,7 @@ import {getReservationRepository} from "./service-injection";
 import {ErrorHandling} from "./errorHandling";
 import {ReservationController} from "./reservation.ctlr";
 
-export function createReservationRoute(reservationRepository = getReservationRepository) {
+export function createReservationRoute(repo = getReservationRepository()) {
     return (req: Request, res: Response) => {
         const onfulfilled = () => {
             res.setHeader('Content-Type', 'application/json;charset=utf-8');
@@ -12,7 +12,7 @@ export function createReservationRoute(reservationRepository = getReservationRep
                 "msg": "Reservation accepted."
             }))
         };
-        new ReservationController(reservationRepository()).post(req.body)
-            .then(onfulfilled).catch(new ErrorHandling(res).onrejected)
+        new ReservationController(repo).post(req.body)
+            .then(onfulfilled).catch(new ErrorHandling(res).onRejected)
     };
 }

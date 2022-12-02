@@ -1,7 +1,6 @@
 const axios = require('axios');
 
 describe('Restaurant', () => {
-  process.env.NODE_ENV = 'local';
   test('says Hello World', async () => {
     const result = await axios.get('http://127.0.0.1:3000');
     expect(result.status).toBe(200);

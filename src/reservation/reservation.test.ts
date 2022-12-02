@@ -20,7 +20,8 @@ describe('reservation', () => {
             email: "juliad@example.net",
             name: "Julia Domna",
             quantity: 5
-        })
+        });
+        expect(reservationDTO.toString()).toEqual("ReservationDTO for Julia Domna is at 2023-11-24 19:00 for 5 people.");
     });
 
     it(' is not allowing two many reservations at same day', async () => {

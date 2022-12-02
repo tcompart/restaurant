@@ -8,8 +8,7 @@ export class ErrorHandling {
         this._resp = resp;
     }
 
-
-    onrejected = (e: Error) => {
+    onRejected = (e: Error) => {
         if (e instanceof BadRequest) {
             console.log("BadRequest was catched: ", e);
             this._resp.status(400);
