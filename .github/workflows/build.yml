@@ -19,7 +19,9 @@ jobs:
           node-version: 18.x
       # install applicaion dependencies
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install -g dotenv
       # build and test the apps
       - name: build and test
         shell: bash
