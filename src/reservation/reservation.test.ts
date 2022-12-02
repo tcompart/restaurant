@@ -1,7 +1,8 @@
-import {BadRequest, ReservationController} from './reservation';
+import {BadRequest} from './reservation';
 import {ReservationDTO} from "./reservation.dto";
 import {FakeDatabase} from "./service-injection";
 import {ReservationImpl} from "./reservation.impl";
+import {ReservationController} from "./reservation.ctlr";
 
 const someDate = new Date().toISOString();
 const someEmail = "my@email.com";

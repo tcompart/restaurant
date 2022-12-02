@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import {getReservationRepository} from "./service-injection";
-import {ReservationController} from "./reservation";
 import {ErrorHandling} from "./errorHandling";
+import {ReservationController} from "./reservation.ctlr";
 
 export function createReservationRoute(reservationRepository = getReservationRepository) {
     return (req: Request, res: Response) => {
