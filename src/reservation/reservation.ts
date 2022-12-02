@@ -32,10 +32,6 @@ export class Repository implements ReservationRepository {
         return returns ? Task.CompletedTask : Task.Aborted;
     }
 
-    async getAll(): Promise<Reservation[] | null> {
-        return prisma.reservation.findMany();
-    }
-
     findReservationsOnDate(at: Date): Promise<Reservation[] | null> {
         const start = new Date(at.setHours(0, 0, 0, 0));
         const end = new Date(at.setHours(23, 59, 59, 59));
@@ -53,8 +49,6 @@ export class Repository implements ReservationRepository {
 
 export interface ReservationRepository {
     create(reservation: Reservation): Promise<Task>
-
-    getAll(): Promise<Reservation[] | null>
 
     findReservationsOnDate(at: Date): Promise<Reservation[] | null>;
 }
