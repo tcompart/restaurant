@@ -4,3 +4,4 @@ coverage
 dist
 .idea
 test-report.xml
+junit.xml

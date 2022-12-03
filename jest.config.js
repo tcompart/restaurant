@@ -4,7 +4,7 @@ module.exports = {
   testRegex: '(/src/.*\\.(test|spec)?\\.(ts|tsx)$|app.test.js)',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testResultsProcessor: "jest-junit",
-  coverageReporters: ["text-summary", "cobertura"],
+  coverageReporters: ["text-summary", "lcov", "cobertura"],
   collectCoverage: true,
   coverageThreshold: {
     global: {
