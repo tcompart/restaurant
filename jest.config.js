@@ -3,7 +3,7 @@ module.exports = {
   testEnvironment: 'node',
   testRegex: '(/src/.*\\.(test|spec)?\\.(ts|tsx)$|app.test.js)',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testResultsProcessor: "jest-sonar-reporter",
+  testResultsProcessor: "jest-junit",
   coverageReporters: ["text-summary", "cobertura"],
   collectCoverage: true,
   coverageThreshold: {
