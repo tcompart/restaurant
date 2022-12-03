@@ -4,7 +4,7 @@ module.exports = {
   testRegex: '(/src/.*\\.(test|spec)?\\.(ts|tsx)$|app.test.js)',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testResultsProcessor: "jest-sonar-reporter",
-  coverageReporters: ['clover', 'json', 'lcov', ['text', {skipFull: true}]],
+  coverageReporters: ["text-summary", "cobertura"],
   collectCoverage: true,
   coverageThreshold: {
     global: {
