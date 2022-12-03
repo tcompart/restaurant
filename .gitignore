@@ -1,4 +1,7 @@
 .env
 node_modules
+coverage
 dist
 .idea
+test-report.xml
+junit.xml

@@ -1,7 +1,8 @@
-import {BadRequest, ReservationController} from './reservation';
+import {BadRequest} from './reservation';
 import {ReservationDTO} from "./reservation.dto";
 import {FakeDatabase} from "./service-injection";
 import {ReservationImpl} from "./reservation.impl";
+import {ReservationController} from "./reservation.ctlr";
 
 const someDate = new Date().toISOString();
 const someEmail = "my@email.com";
@@ -19,7 +20,8 @@ describe('reservation', () => {
             email: "juliad@example.net",
             name: "Julia Domna",
             quantity: 5
-        })
+        });
+        expect(reservationDTO.toString()).toEqual("ReservationDTO for Julia Domna is at 2023-11-24 19:00 for 5 people.");
     });
 
     it(' is not allowing two many reservations at same day', async () => {

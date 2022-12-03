@@ -1,15 +1,9 @@
 import {Repository, Reservation, ReservationRepository, Task} from "./reservation";
 
-const giveFake = process.env["NODE_ENV"] === "TEST";
-
 export class FakeDatabase extends Array<Reservation> implements ReservationRepository {
     create(reservation: Reservation): Promise<Task> {
         this.push(reservation)
         return Promise.resolve(Task.CompletedTask);
-    }
-
-    getAll(): Promise<Reservation[] | null> {
-        return Promise.resolve(this);
     }
 
     findReservationsOnDate(at: Date): Promise<Reservation[] | null> {
@@ -19,5 +13,5 @@ export class FakeDatabase extends Array<Reservation> implements ReservationRepos
 }
 
 export function getReservationRepository(): ReservationRepository {
-    return giveFake ? new FakeDatabase() : new Repository();
+    return process.env["NODE_ENV"] !== 'PROD' ? new FakeDatabase() : new Repository();
 }

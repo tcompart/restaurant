@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import {hashCode} from "../hashCodeHelper";
 import {Reservation} from "./reservation";
 
 dayjs.locale()
@@ -36,10 +35,6 @@ export class ReservationImpl implements Reservation {
         const format = "YYYY-MM-DD";
         const localDate = date.substring(0, format.length);
         return dayjs(date, format).format(format) === localDate;
-    }
-
-    get hashcode(): number {
-        return hashCode(JSON.stringify(this))
     }
 
     get toString(): string {

@@ -1,3 +1,5 @@
+import {Repository} from "./reservation/reservation";
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const {createReservationRoute} = require("./reservation/routes");
@@ -20,7 +22,7 @@ app.get('/', (_req, res) => {
   res.send(jsonContent)
 })
 
-app.post('/reservations', createReservationRoute())
+app.post('/reservations', createReservationRoute(new Repository()))
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
