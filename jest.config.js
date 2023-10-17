@@ -5,6 +5,7 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testResultsProcessor: "jest-junit",
   coverageReporters: ["text-summary", "lcov", "cobertura"],
+  setupFiles: ["dotenv/config"],
   collectCoverage: true,
   coverageThreshold: {
     global: {

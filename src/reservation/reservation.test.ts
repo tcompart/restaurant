@@ -1,8 +1,9 @@
-import {BadRequest} from './reservation';
+import {BadRequest, Repository} from './reservation';
 import {ReservationDTO} from "./reservation.dto";
 import {FakeDatabase} from "./service-injection";
 import {ReservationImpl} from "./reservation.impl";
 import {ReservationController} from "./reservation.ctlr";
+import {validate} from "uuid";
 
 const someDate = new Date().toISOString();
 const someEmail = "my@email.com";
@@ -62,10 +63,17 @@ describe('reservation', () => {
         const reservationDTO = new ReservationDTO(invalidDate, someEmail, someName, 5);
         const controller = new ReservationController(new FakeDatabase());
         await expect(controller.post(reservationDTO)).rejects.toMatchObject({
-            message: /not a valid date/,
+            message: /Invalid time value/,
             name: "400"
         });
     });
+
+    it.each([
+        '2023-02-28 10:00',
+        'Fri Nov 24 2023 19:00:00 GMT+0100'
+    ])('validates dates as input', async(invaliddate: string) => {
+        ReservationImpl.isValidDate(invaliddate)
+    })
 
     it('not allowed without emails', async () => {
         const controller = new ReservationController(new FakeDatabase());
@@ -74,6 +82,18 @@ describe('reservation', () => {
                 message: /email needs to be defined./,
                 name: "400"
             });
+    });
+
+    describe('repository', () => {
+       test('create and delete entry', async () => {
+           const repository = new Repository();
+           const taskPromise = await repository.create(new ReservationImpl('2023-01-31 19:00', 'my@email.com', '', 2));
+           expect(taskPromise).toHaveProperty("id");
+           expect(taskPromise.id).not.toBeNull();
+           await expect(repository.delete(taskPromise.id!)).resolves.toMatchObject({id: taskPromise.id});
+           expect(validate(taskPromise.id!)).toBe(true);
+           await expect(repository.delete(taskPromise.id!)).rejects.toBe(null);
+       })
     });
 
     describe('impl', () => {

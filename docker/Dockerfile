@@ -2,27 +2,30 @@
 # This build created a staging docker image
 #
 FROM node:18 AS build
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY ../package*.json ./
-COPY ../src src
-COPY ../config/env.PROD ./.env
-COPY ../tsconfig.json ./
-COPY ../prisma/ ./prisma/
+COPY ["package.json", "package-lock.json", "./"]
+COPY .env ./.env
+COPY prisma ./prisma/
+COPY src ./
+COPY tsconfig.json ./
+
 RUN npm ci --quiet
 RUN npm run build
 RUN npx prisma generate
 
+COPY . .
+
 # Build Stage 2
 # This build takes the production build from staging build
 #
-FROM node:18-slim
-WORKDIR /usr/src/app
+FROM node:18-slim as production
+WORKDIR /app
 RUN apt-get clean && apt-get update -yy && apt install -yy docker.io
-COPY --from=build /usr/src/app/dist ./
-COPY --from=build /usr/src/app/.env ./
-COPY --from=build /usr/src/app/prisma ./prisma/
-COPY --from=build /usr/src/app/node_modules/ ./node_modules/
+COPY --from=build /app/dist ./
+COPY --from=build /app/.env ./
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/node_modules/ ./node_modules/
 ENV NODE_ENV PROD
 EXPOSE 3000
-ENTRYPOINT ["/bin/sh", "-c" , "npx prisma migrate deploy && node ./index.js"]
+CMD source migrate-and-start.sh

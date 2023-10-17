@@ -1,4 +1,5 @@
 import {PrismaClient} from '.prisma/client'
+import {Identifiable} from "./reservation.impl";
 
 export interface Reservation {
     at: Date | string;
@@ -26,10 +27,9 @@ export enum Task {
 const prisma = new PrismaClient()
 
 export class Repository implements ReservationRepository {
-    async create(reservation: Reservation): Promise<Task> {
+    async create(reservation: Reservation): Promise<Identifiable> {
         console.log("Reservation was given ", reservation.at, " ", reservation.email);
-        const returns = await prisma.reservation.create({data: reservation});
-        return returns ? Task.CompletedTask : Task.Aborted;
+        return prisma.reservation.create({data: reservation});
     }
 
     findReservationsOnDate(at: Date): Promise<Reservation[] | null> {
@@ -45,10 +45,23 @@ export class Repository implements ReservationRepository {
         })
     }
 
+    delete(id: string): Promise<Identifiable | null> {
+        return new Promise<Identifiable | null>((resolve, rejects) => {
+            return prisma.reservation.delete({
+                where: {
+                    id: id
+                }
+            }).then(res => resolve(res))
+            .catch(() => rejects(null));
+        });
+
+    }
 }
 
 export interface ReservationRepository {
-    create(reservation: Reservation): Promise<Task>
+    create(reservation: Reservation): Promise<Identifiable>
 
     findReservationsOnDate(at: Date): Promise<Reservation[] | null>;
+
+    delete(id: string): Promise<Identifiable | null>
 }

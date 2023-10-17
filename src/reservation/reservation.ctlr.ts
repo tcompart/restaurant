@@ -1,6 +1,6 @@
 import {ReservationDTO} from "./reservation.dto";
-import {ReservationImpl} from "./reservation.impl";
-import {BadRequest, ReservationRepository, Task} from "./reservation";
+import {Identifiable, ReservationImpl} from "./reservation.impl";
+import {BadRequest, ReservationRepository} from "./reservation";
 
 export class ReservationController {
     private _repository: ReservationRepository;
@@ -9,8 +9,8 @@ export class ReservationController {
         this._repository = db;
     }
 
-    post(reservationDTO: ReservationDTO): Promise<Task> {
-        return new Promise<Task>((resolve, reject) => {
+    post(reservationDTO: ReservationDTO): Promise<Identifiable> {
+        return new Promise<Identifiable>((resolve, reject) => {
             const reservation = new ReservationImpl(reservationDTO.at, reservationDTO.email, reservationDTO.name, reservationDTO.quantity);
             return this._repository.findReservationsOnDate(reservation.at)
                 .then(reservationsOnDate => {
