@@ -4,3 +4,4 @@ npm-debug.log
 junit.xml
 coverage
 .idea
+.DS_Store
