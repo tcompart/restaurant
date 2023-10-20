@@ -9,8 +9,8 @@
   "scripts": {
     "start": "./migrate-and-start.sh",
     "build": "rimraf dist && ncc build src/app.js -o dist",
-    "test": "dotenv -e config/env.LOCAL jest",
-    "ci": "start-server-and-test start http://127.0.0.1:3000 test",
+    "test": "start-server-and-test start http://127.0.0.1:3000 ci",
+    "ci": "dotenv -e config/env.LOCAL jest",
     "deploy": "cd docker && docker build .. -f Dockerfile --no-cache -t restaurant",
     "postinstall": "sleep 10 && prisma migrate"
   },
