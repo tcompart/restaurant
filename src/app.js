@@ -12,7 +12,7 @@ console.log(`The connection URL is ${process.env.DATABASE_URL}`)
 const app = express()
 app.disable("x-powered-by");
 app.use(bodyParser.json())
-const port = 3000;
+const port = `${process.env.PORT}`;
 
 app.get('/', (_req, res) => {
   let jsonContent = JSON.stringify({
@@ -24,6 +24,17 @@ app.get('/', (_req, res) => {
 
 app.post('/reservations', createReservationRoute(new Repository()))
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
+function handleExit(signal) {
+  console.log(`Received ${signal}. Closing server properly.`);
+  server.close(function () {
+    console.log('HTTP server closed');
+  });
+}
+
+process.on('SIGINT', handleExit);
+process.on('SIGQUIT', handleExit);
+process.on('SIGTERM', handleExit);
