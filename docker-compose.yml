@@ -13,9 +13,5 @@ services:
       - "5455:5432"
     restart: unless-stopped
 
-# force containers to join mynetwork
-networks:
-  mynetwork:
-    external: true
 volumes:
   postgres_data:

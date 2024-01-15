@@ -1,10 +1,10 @@
 import {Reservation} from "./reservation";
 
 export class ReservationDTO implements Reservation {
-    private _at!: string;
-    private _email!: string;
-    private _name!: string;
-    private _quantity!: number;
+    private readonly _at!: string;
+    private readonly _email!: string;
+    private readonly _name!: string;
+    private readonly _quantity!: number;
 
     constructor(at: string, email: string, name: string, quantity: number) {
         this._at = at;

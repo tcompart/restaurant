@@ -16,7 +16,7 @@ export class ReservationImpl extends Identifiable implements Reservation {
     name: string;
     quantity: number;
 
-    constructor(at: Date|string, email: string, name: string, quantity: number) {
+    constructor(at: Date|string, email: string, name: string | null, quantity: number) {
         super();
         if (!at || !ReservationImpl.isValidDate(at)) {
             throw new Error(`${at} is not a valid date`);

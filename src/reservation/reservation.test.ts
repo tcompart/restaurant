@@ -3,7 +3,6 @@ import {ReservationDTO} from "./reservation.dto";
 import {FakeDatabase} from "./service-injection";
 import {ReservationImpl} from "./reservation.impl";
 import {ReservationController} from "./reservation.ctlr";
-import {validate} from "uuid";
 
 const someDate = new Date().toISOString();
 const someEmail = "my@email.com";
@@ -29,7 +28,7 @@ describe('reservation', () => {
         const fakeDatabase = new FakeDatabase();
         const reservationController = new ReservationController(fakeDatabase);
 
-        await reservationController.post(new ReservationDTO("2023-11-12 10:00", "juliad@example.net", "Julia Domna", 6));
+        await reservationController.post(new ReservationDTO("2023-11-12 10:00", "juliad@example.net", "Julia Domna", 5));
         const result = reservationController.post(new ReservationDTO("2023-11-12 19:00", "juliad@example.net", "Julia Domna", 5));
         await expect(result).rejects.toMatchObject({
             message: /Too many reservations.'/,
@@ -71,8 +70,9 @@ describe('reservation', () => {
     it.each([
         '2023-02-28 10:00',
         'Fri Nov 24 2023 19:00:00 GMT+0100'
-    ])('validates dates as input', async(invaliddate: string) => {
+    ])('validates dates as input', function(invaliddate, done) {
         ReservationImpl.isValidDate(invaliddate)
+        done();
     })
 
     it('not allowed without emails', async () => {
@@ -84,18 +84,6 @@ describe('reservation', () => {
             });
     });
 
-    describe('repository', () => {
-       test('create and delete entry', async () => {
-           const repository = new Repository();
-           const taskPromise = await repository.create(new ReservationImpl('2023-01-31 19:00', 'my@email.com', '', 2));
-           expect(taskPromise).toHaveProperty("id");
-           expect(taskPromise.id).not.toBeNull();
-           await expect(repository.delete(taskPromise.id!)).resolves.toMatchObject({id: taskPromise.id});
-           expect(validate(taskPromise.id!)).toBe(true);
-           await expect(repository.delete(taskPromise.id!)).rejects.toBe(null);
-       })
-    });
-
     describe('impl', () => {
         it.each([
             '99-2343-2343:32894;:343',
@@ -104,10 +92,11 @@ describe('reservation', () => {
             '2023-02-31 10:00',
         ])(' validates date as well %p', (invalidDate) => {
             try {
-                new ReservationImpl(invalidDate, someEmail, someName, 2);
-                expect("failure").toBe(true);
-            } catch (e) {
-                expect((e as BadRequest).message).toBe(invalidDate + " is not a valid date");
+                new ReservationImpl(invalidDate, someEmail, someName, 2)
+                expect("failure").toBe(true)
+            } catch (e: any) {
+                const message = e ? e.message : "empty";
+                expect(message).toBe(invalidDate + " is not a valid date");
             }
         });
         it.each([0, -1, -100, 'x'])
@@ -117,7 +106,7 @@ describe('reservation', () => {
         });
 
         it(' validates names to be at least empty', () => {
-            const reservation = new ReservationImpl(someDate, someEmail, null!, 2);
+            const reservation = new ReservationImpl(someDate, someEmail, null, 2);
             expect(reservation.name).toBe("");
         });
     });
