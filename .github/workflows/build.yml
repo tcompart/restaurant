@@ -13,6 +13,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - uses: adambirds/docker-compose-action@v1.3.0
+        with:
+          test-container: "db"
       - name: setup node
         uses: actions/setup-node@master
         with:
@@ -24,7 +27,7 @@ jobs:
           npm install -g dotenv
       # build and test the apps
       - name: build and test
-        run: npm test
+        run: npm run test:ci
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
