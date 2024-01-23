@@ -9,7 +9,8 @@
   "scripts": {
     "start": "./migrate-and-start.sh",
     "build": "rimraf ./dist && ncc build ./src/app.js -o ./dist",
-    "test": "rm -rf coverage && jest && mv coverage/coverage-final.json coverage/coverage-unit.json && npm run test:ci",
+    "test": "rm -rf coverage && npm run test:unit && npm run test:ci",
+    "test:unit": "jest && mv coverage/coverage-final.json coverage/coverage-unit.json",
     "test:ci": "start-server-and-test start http://localhost:3000 docker",
     "docker": "docker-compose up db --detach && npm run ci",
     "ci": "jest --testMatch='**/*.test.it.[jt]s?(x)' && mv coverage/coverage-final.json coverage/coverage-integration.json && npm run merge",

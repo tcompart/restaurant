@@ -56,9 +56,4 @@ export class ReservationImpl extends Identifiable implements Reservation {
         const s = dayjs1.format("YYYY-MM-DD");
         return s === localDate;
     }
-
-    public get toString(): string {
-        return JSON.stringify(this);
-    }
-
 }
