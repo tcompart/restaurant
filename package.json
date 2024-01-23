@@ -9,10 +9,12 @@
   "scripts": {
     "start": "./migrate-and-start.sh",
     "build": "rimraf ./dist && ncc build ./src/app.js -o ./dist",
-    "test": "docker-compose up db --detach && npm run test:ci",
-    "test:ci": "start-server-and-test start http://localhost:3000 ci",
-    "ci": "dotenv -e config/env.LOCAL jest && mv coverage/coverage-final.json coverage/coverage-unit.json",
-    "deploy": "npm test && cd docker && docker build .. -f ./Dockerfile  --no-cache -t restaurant"
+    "test": "rm -rf coverage && jest && mv coverage/coverage-final.json coverage/coverage-unit.json && npm run test:ci",
+    "test:ci": "start-server-and-test start http://localhost:3000 docker",
+    "docker": "docker-compose up db --detach && npm run ci",
+    "ci": "jest --testMatch='**/*.test.it.[jt]s?(x)' && mv coverage/coverage-final.json coverage/coverage-integration.json && npm run merge",
+    "deploy": "npm test && cd docker && docker build .. -f ./Dockerfile  --no-cache -t restaurant",
+    "merge": "npx nyc report --reporter html --reporter text --reporter html --reporter cobertura --reporter lcov -t coverage --report-dir coverage/summary"
   },
   "keywords": [
     "code",
@@ -36,6 +38,7 @@
     "follow-redirects": "^1.15.5",
     "jest": "^29.7.0",
     "jest-junit": "^16.0.0",
+    "nyc": "^15.1.0",
     "prisma": "^5.5.0",
     "rimraf": "^5.0.5",
     "start-server-and-test": "^2.0.1",

@@ -2,7 +2,7 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: 'node',
   testResultsProcessor: "jest-junit",
-  coverageReporters: ["text-summary", "lcov", "cobertura", "json"],
+  coverageReporters: ["json"],
   setupFiles: ["dotenv/config"],
   collectCoverage: true,
   coverageDirectory: 'coverage'
