@@ -15,11 +15,10 @@ app.use(bodyParser.json())
 const port = `${process.env.PORT}`;
 
 app.get('/', (_req, res) => {
-  let jsonContent = JSON.stringify({
-    "msg": "Hello World"
-  });
   res.setHeader('Content-Type', 'application/json;charset=utf-8');
-  res.send(jsonContent)
+  res.send({
+    "msg": "Hello World"
+  })
 })
 
 app.post('/reservations', createReservationRoute(new Repository()))
