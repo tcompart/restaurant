@@ -9,7 +9,7 @@ export class ReservationController {
         this._repository = db;
     }
 
-    post(reservationDTO: ReservationDTO): Promise<Identifiable> {
+    async post(reservationDTO: ReservationDTO): Promise<Identifiable> {
         return new Promise<Identifiable>((resolve, reject) => {
             const reservation = new ReservationImpl(reservationDTO.at, reservationDTO.email, reservationDTO.name, reservationDTO.quantity);
             return this._repository.findReservationsOnDate(reservation.at)
