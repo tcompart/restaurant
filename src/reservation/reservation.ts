@@ -32,7 +32,7 @@ export class Repository implements ReservationRepository {
         return prisma.reservation.create({data: reservation});
     }
 
-    findReservationsOnDate(at: Date): Promise<Reservation[] | any> {
+    async findReservationsOnDate(at: Date): Promise<Reservation[] | null> {
         const start = new Date(at.setHours(0, 0, 0, 0));
         const end = new Date(at.setHours(23, 59, 59, 59));
         return prisma.reservation.findMany({
@@ -45,7 +45,7 @@ export class Repository implements ReservationRepository {
         })
     }
 
-    async delete(id: string): Promise<Identifiable | any> {
+    async delete(id: string): Promise<Identifiable | null> {
         return new Promise<Identifiable | null>((resolve, rejects) => {
             return prisma.reservation.delete({
                 where: {
