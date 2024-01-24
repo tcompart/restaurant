@@ -52,7 +52,7 @@ export class Repository implements ReservationRepository {
                     id: id
                 }
             }).then(res => resolve(res))
-            .catch(() => rejects(null));
+            .catch((reason?) => rejects(reason));
         });
 
     }

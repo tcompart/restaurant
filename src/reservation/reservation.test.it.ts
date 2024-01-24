@@ -4,6 +4,7 @@ import {FakeDatabase} from "./service-injection";
 import {ReservationImpl} from "./reservation.impl";
 import {ReservationController} from "./reservation.ctlr";
 import {validate} from "uuid";
+import {PrismaClientKnownRequestError} from "prisma/prisma-client/runtime/library";
 
 describe('reservation', () => {
 
@@ -15,7 +16,7 @@ describe('reservation', () => {
            expect(taskPromise.id).not.toBeNull();
            await expect(repository.delete(taskPromise.id!)).resolves.toMatchObject({id: taskPromise.id});
            expect(validate(taskPromise.id!)).toBe(true);
-           await expect(repository.delete(taskPromise.id!)).rejects.toBe(null);
+           await expect(repository.delete(taskPromise.id!)).rejects.toMatchObject({} as PrismaClientKnownRequestError);
        })
     });
 
