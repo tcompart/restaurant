@@ -24,13 +24,13 @@ describe('service-injection', () => {
     expect(database[0].id).toBeDefined();
   })
 
-  test('can find created reservations', async () => {
+  test('can find created reservations', () => {
     const database = new FakeDatabase();
     database.create(reservation);
-    const reservations = await database.findReservationsOnDate(today);
-    expect(reservations).toHaveLength(1);
-    expect(reservations).toBeDefined();
-    const stored = reservations?.pop();
+    const reservations =  database.findReservationsOnDate(today);
+    expect(reservations).resolves.toHaveLength(1);
+    expect(reservations).resolves.toBeDefined();
+    const stored = database.pop();
     expect(stored?.email).toBe('my@mail.com');
   });
 

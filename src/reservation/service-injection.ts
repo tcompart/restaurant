@@ -20,7 +20,7 @@ export class FakeDatabase extends Array<ReservationImpl> implements ReservationR
                 return this.splice(i, 1)[0];
             }
         }
-        return null;
+        throw new Error("Nothing found");
     }
 
     delete(id: string): Promise<Identifiable | null> {

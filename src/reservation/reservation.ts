@@ -28,8 +28,14 @@ const prisma = new PrismaClient()
 
 export class Repository implements ReservationRepository {
     async create(reservation: Reservation): Promise<Identifiable> {
-        console.log("Reservation was given ", reservation.at, " ", reservation.email);
-        return prisma.reservation.create({data: reservation});
+        const created = await prisma.reservation.create({data: reservation});
+        return new Promise<Identifiable>((resolve, reject) => {
+            if (created) {
+                resolve(created);
+            } else {
+                reject(new Error("Creation was not successful."))
+            }
+        });
     }
 
     async findReservationsOnDate(at: Date): Promise<Reservation[] | null> {
@@ -45,16 +51,19 @@ export class Repository implements ReservationRepository {
         })
     }
 
-    async delete(id: string): Promise<Identifiable | null> {
-        return new Promise<Identifiable | null>((resolve, rejects) => {
-            return prisma.reservation.delete({
+    delete(id: string): Promise<Identifiable | null> {
+        return new Promise<Identifiable | null>(async (resolve, rejects) => {
+            const deleted = prisma.reservation.delete({
                 where: {
                     id: id
                 }
-            }).then(res => resolve(res))
-            .catch((reason?) => rejects(reason));
+            });
+            try {
+                resolve(await deleted);
+            } catch (e) {
+                rejects(new Error("Record to delete does not exist."));
+            }
         });
-
     }
 }
 

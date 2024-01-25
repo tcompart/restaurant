@@ -14,7 +14,7 @@ export class ReservationController {
             const reservation = new ReservationImpl(reservationDTO.at, reservationDTO.email, reservationDTO.name, reservationDTO.quantity);
             return this._repository.findReservationsOnDate(reservation.at)
                 .then(reservationsOnDate => {
-                    if (reservationsOnDate) {
+                    if (Array.isArray(reservationsOnDate)) {
                         const amount = reservationsOnDate
                             .map(r => r.quantity)
                             .reduce((a, b) => a + b, 0);
