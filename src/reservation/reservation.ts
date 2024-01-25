@@ -52,17 +52,21 @@ export class Repository implements ReservationRepository {
     }
 
     delete(id: string): Promise<Identifiable | null> {
-        return new Promise<Identifiable | null>(async (resolve, rejects) => {
-            const deleted = prisma.reservation.delete({
-                where: {
-                    id: id
+        return new Promise<Identifiable | null>((resolve, rejects) => {
+            (async () => {
+                try {
+                    const result = await prisma.reservation.delete({
+                        where: {
+                            id: id
+                        }
+                    });
+                    if (result) {
+                        resolve(result);
+                    }
+                } catch (e) {
+                    rejects(new Error("Record to delete does not exist."));
                 }
-            });
-            try {
-                resolve(await deleted);
-            } catch (e) {
-                rejects(new Error("Record to delete does not exist."));
-            }
+            })();
         });
     }
 }
