@@ -1,7 +1,7 @@
-import {BadRequest, ReservationController} from './reservation';
 import {ReservationDTO} from "./reservation.dto";
 import {FakeDatabase} from "./service-injection";
 import {ReservationImpl} from "./reservation.impl";
+import {ReservationController} from "./reservation.ctlr";
 
 const someDate = new Date().toISOString();
 const someEmail = "my@email.com";
@@ -19,14 +19,15 @@ describe('reservation', () => {
             email: "juliad@example.net",
             name: "Julia Domna",
             quantity: 5
-        })
+        });
+        expect(reservationDTO.toString()).toEqual("ReservationDTO for Julia Domna is at 2023-11-24 19:00 for 5 people.");
     });
 
     it(' is not allowing two many reservations at same day', async () => {
         const fakeDatabase = new FakeDatabase();
         const reservationController = new ReservationController(fakeDatabase);
 
-        await reservationController.post(new ReservationDTO("2023-11-12 10:00", "juliad@example.net", "Julia Domna", 6));
+        await reservationController.post(new ReservationDTO("2023-11-12 10:00", "juliad@example.net", "Julia Domna", 5));
         const result = reservationController.post(new ReservationDTO("2023-11-12 19:00", "juliad@example.net", "Julia Domna", 5));
         await expect(result).rejects.toMatchObject({
             message: /Too many reservations.'/,
@@ -60,10 +61,18 @@ describe('reservation', () => {
         const reservationDTO = new ReservationDTO(invalidDate, someEmail, someName, 5);
         const controller = new ReservationController(new FakeDatabase());
         await expect(controller.post(reservationDTO)).rejects.toMatchObject({
-            message: /not a valid date/,
+            message: /Invalid time value/,
             name: "400"
         });
     });
+
+    it.each([
+        '2023-02-28 10:00',
+        'Fri Nov 24 2023 19:00:00 GMT+0100'
+    ])('validates dates as input', function(invaliddate, done) {
+        ReservationImpl.isValidDate(invaliddate)
+        done();
+    })
 
     it('not allowed without emails', async () => {
         const controller = new ReservationController(new FakeDatabase());
@@ -82,10 +91,11 @@ describe('reservation', () => {
             '2023-02-31 10:00',
         ])(' validates date as well %p', (invalidDate) => {
             try {
-                new ReservationImpl(invalidDate, someEmail, someName, 2);
-                expect("failure").toBe(true);
-            } catch (e) {
-                expect((e as BadRequest).message).toBe(invalidDate + " is not a valid date");
+                new ReservationImpl(invalidDate, someEmail, someName, 2)
+                expect("failure").toBe(true)
+            } catch (e: any) {
+                const message = e ? e.message : "empty";
+                expect(message).toBe(invalidDate + " is not a valid date");
             }
         });
         it.each([0, -1, -100, 'x'])
@@ -95,7 +105,7 @@ describe('reservation', () => {
         });
 
         it(' validates names to be at least empty', () => {
-            const reservation = new ReservationImpl(someDate, someEmail, null!, 2);
+            const reservation = new ReservationImpl(someDate, someEmail, null, 2);
             expect(reservation.name).toBe("");
         });
     });

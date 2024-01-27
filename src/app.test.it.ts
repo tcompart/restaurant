@@ -14,14 +14,13 @@ describe('Restaurant', () => {
       name: "anyways",
       quantity: 0
     };
-    await expect(axios.post('http://127.0.0.1:3000/reservations', reservation, {
-      headers: {
-        // 'application/json' is the modern content-type for JSON, but some
-        // older servers may use 'text/json'.
-        // See: http://bit.ly/text-json
-        'content-type': 'application/json'
-      }
-    })).rejects.toMatchObject({response: {data: "Bad request.", status: 400}});
+    await expect(axios.post('http://127.0.0.1:3000/reservations', reservation)).rejects.toMatchObject(
+        {
+          response: {
+            data: "Bad request.",
+            status: 400
+          }
+        });
   })
 
   test('post reservation with valid json request', async () => {
@@ -31,14 +30,7 @@ describe('Restaurant', () => {
       name: "Katinka Kuruna",
       quantity: 1
     };
-    await expect(axios.post('http://127.0.0.1:3000/reservations', reservation, {
-      headers: {
-        // 'application/json' is the modern content-type for JSON, but some
-        // older servers may use 'text/json'.
-        // See: http://bit.ly/text-json
-        'content-type': 'application/json'
-      }
-    })).resolves.toMatchObject({
+    await expect(axios.post('http://127.0.0.1:3000/reservations', reservation)).resolves.toMatchObject({
       status: 201,
       data: {
         msg: "Reservation accepted."

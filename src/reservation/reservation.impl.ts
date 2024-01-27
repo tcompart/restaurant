@@ -1,20 +1,24 @@
 import dayjs from "dayjs";
-import {hashCode} from "../hashCodeHelper";
 import {Reservation} from "./reservation";
 
 dayjs.locale()
 const advancedFormat = require('dayjs/plugin/customParseFormat')
 dayjs.extend(advancedFormat)
 
-export class ReservationImpl implements Reservation {
+export class Identifiable {
+    id: string | null | undefined;
+}
+
+export class ReservationImpl extends Identifiable implements Reservation {
     at: Date;
     private createdAt: Date;
     email: string;
     name: string;
     quantity: number;
 
-    constructor(at: string, email: string, name: string, quantity: number) {
-        if (!at || !this.isValidDate(at)) {
+    constructor(at: Date|string, email: string, name: string | null, quantity: number) {
+        super();
+        if (!at || !ReservationImpl.isValidDate(at)) {
             throw new Error(`${at} is not a valid date`);
         }
         if (!email || email === '') {
@@ -24,7 +28,6 @@ export class ReservationImpl implements Reservation {
             throw new Error("please give at least one person for the reservation");
         }
         const date = new Date(at)
-
         this.createdAt = dayjs().toDate();
         this.at = date;
         this.email = email;
@@ -32,18 +35,25 @@ export class ReservationImpl implements Reservation {
         this.quantity = quantity;
     }
 
-    isValidDate(date: string) {
-        const format = "YYYY-MM-DD";
-        const localDate = date.substring(0, format.length);
-        return dayjs(date, format).format(format) === localDate;
-    }
 
-    get hashcode(): number {
-        return hashCode(JSON.stringify(this))
+    static isValidDate(date: Date|string) {
+        function findDateByPattern(myString: string) {
+            const yyyyMMdd = /\d{4}-\d{2}-\d{2}/;
+            return yyyyMMdd.test(myString);
+        }
+        let extractedDate;
+        if (date instanceof Date) {
+            extractedDate = new Date(date).toISOString();
+        } else if (findDateByPattern(date)) {
+            extractedDate = date;
+        } else if (/[12][0129]\d\d/.test(date)) {
+            extractedDate = new Date(date).toISOString();
+        } else {
+            return false;
+        }
+        const localDate = extractedDate.substring(0, "YYYY-MM-DD".length);
+        const dayjs1 = dayjs(localDate, "YYYY-MM-DD");
+        const s = dayjs1.format("YYYY-MM-DD");
+        return s === localDate;
     }
-
-    get toString(): string {
-        return JSON.stringify(this);
-    }
-
 }

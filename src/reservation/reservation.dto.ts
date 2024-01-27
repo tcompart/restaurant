@@ -1,10 +1,10 @@
 import {Reservation} from "./reservation";
 
 export class ReservationDTO implements Reservation {
-    private _at!: string;
-    private _email!: string;
-    private _name!: string;
-    private _quantity!: number;
+    private readonly _at!: string;
+    private readonly _email!: string;
+    private readonly _name!: string;
+    private readonly _quantity!: number;
 
     constructor(at: string, email: string, name: string, quantity: number) {
         this._at = at;
@@ -21,31 +21,15 @@ export class ReservationDTO implements Reservation {
         return this._at;
     }
 
-    set at(value: string) {
-        this._at = value;
-    }
-
     get email(): string {
         return this._email;
-    }
-
-    set email(value: string) {
-        this._email = value;
     }
 
     get name(): string {
         return this._name;
     }
 
-    set name(value: string) {
-        this._name = value;
-    }
-
     get quantity(): number {
         return this._quantity;
-    }
-
-    set quantity(value: number) {
-        this._quantity = value;
     }
 }

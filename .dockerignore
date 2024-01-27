@@ -1,8 +1,7 @@
-.env
+.git
 node_modules
-coverage
-dist
-.idea
-test-report.xml
+npm-debug.log
 junit.xml
+coverage
+.idea
 .DS_Store

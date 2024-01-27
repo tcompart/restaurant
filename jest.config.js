@@ -1,6 +1,10 @@
 module.exports = {
-  transform: {'^.+\\.ts?$': 'ts-jest'},
+  preset: "ts-jest",
   testEnvironment: 'node',
-  testRegex: '(/src/.*\\.(test|spec)?\\.(ts|tsx)$|app.test.js)',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node']
+  collectCoverageFrom: ["src/**/*.ts", "src/**/*.js", "!src/**/*.test.*"],
+  testResultsProcessor: "jest-junit",
+  coverageReporters: ["json"],
+  setupFiles: ["dotenv/config"],
+  collectCoverage: true,
+  coverageDirectory: 'coverage'
 };
