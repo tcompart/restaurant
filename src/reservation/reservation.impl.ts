@@ -31,7 +31,7 @@ export class ReservationImpl extends Identifiable implements Reservation {
         this.createdAt = dayjs().toDate();
         this.at = date;
         this.email = email;
-        this.name = name ? name : "";
+        this.name = name || "";
         this.quantity = quantity;
     }
 

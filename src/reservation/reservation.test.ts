@@ -1,7 +1,7 @@
 import {ReservationDTO} from "./reservation.dto";
-import {FakeDatabase} from "./service-injection";
 import {ReservationImpl} from "./reservation.impl";
 import {ReservationController} from "./reservation.ctlr";
+import {FakeDatabase} from "./fake-database";
 
 const someDate = new Date().toISOString();
 const someEmail = "my@email.com";

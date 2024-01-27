@@ -1,6 +1,7 @@
-import {FakeDatabase, getReservationRepository} from "./service-injection";
+import {getReservationRepository} from "./service-injection";
 import {ReservationImpl} from "./reservation.impl";
 import {Reservation} from "./reservation";
+import {FakeDatabase} from "./fake-database";
 
 describe('service-injection', () => {
 
