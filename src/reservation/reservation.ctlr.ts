@@ -18,9 +18,9 @@ export class ReservationController {
         } catch (error: any) {
           reject(new BadRequest(error.message, "400"));
         }
-        if (reservation && reservation.at) {
+        if (reservation?.at) {
           try {
-            const reservations = await this._repository.findReservationsOnDate(reservation.at);
+            const reservations = await this._repository.findReservationsOnDate(reservation?.at);
             if (Array.isArray(reservations)) {
               const amount = reservations
               .map(r => r.quantity)
