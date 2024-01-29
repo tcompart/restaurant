@@ -28,7 +28,7 @@ describe('reservation', () => {
         const reservationController = new ReservationController(fakeDatabase);
 
         await reservationController.post(new ReservationDTO("2023-11-12 10:00", "juliad@example.net", "Julia Domna", 5));
-        const result = reservationController.post(new ReservationDTO("2023-11-12 19:00", "juliad@example.net", "Julia Domna", 5));
+        const result = reservationController.post(new ReservationDTO("2023-11-12 10:00", "juliad@example.net", "Julia Domna", 5));
         await expect(result).rejects.toMatchObject({
             message: /Too many reservations.'/,
             name: "400"
