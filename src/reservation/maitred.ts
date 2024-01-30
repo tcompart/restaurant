@@ -69,11 +69,9 @@ export class Seating {
     overlaps(reservation: Reservation, seatingDuration: Duration): boolean {
         const start: Date = new Date(reservation.at);
         const end: Date = dayjs(new Date(reservation.at)).add(seatingDuration).toDate();
-        //TODO other reservations are still ongoing (so start is before new start)
-
-        const reservationIsWithinStart = start.valueOf() >= this._starts.valueOf() && start.valueOf() <= this._ends.valueOf();
-        const reservationIsWithinEnd = end.valueOf() >= this._starts.valueOf() && end.valueOf() <= this._ends.valueOf();
-        return reservationIsWithinStart || reservationIsWithinEnd;
+        const reservationStartConflicts = start.valueOf() >= this._starts.valueOf() && start.valueOf() <= this._ends.valueOf();
+        const reservationEndConflicts = end.valueOf() >= this._starts.valueOf() && end.valueOf() <= this._ends.valueOf();
+        return reservationStartConflicts || reservationEndConflicts;
     }
 }
 
