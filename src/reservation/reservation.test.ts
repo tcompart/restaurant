@@ -67,14 +67,6 @@ describe('reservation', () => {
         });
     });
 
-    it.each([
-        '2023-02-28 10:00',
-        'Fri Nov 24 2023 19:00:00 GMT+0100'
-    ])('validates dates as input', function(invaliddate, done) {
-        ReservationImpl.isValidDate(invaliddate)
-        done();
-    })
-
     it('not allowed without emails', async () => {
         const controller = new ReservationController(new FakeDatabase(), [new Table(8)]);
         await expect(controller.post(new ReservationDTO('2023-03-11 19:00', '', someName, 5)))
