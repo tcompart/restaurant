@@ -1,10 +1,6 @@
 import dayjs from "dayjs";
 import {Reservation} from "./reservation";
 
-dayjs.locale()
-const advancedFormat = require('dayjs/plugin/customParseFormat')
-dayjs.extend(advancedFormat)
-
 export class Identifiable {
     id: string | null | undefined;
 }

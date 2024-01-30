@@ -1,10 +1,8 @@
 import {Duration} from "dayjs/plugin/duration";
-import dayjs, {Dayjs} from "dayjs";
+import dayjs from "dayjs";
 import {Reservation, TooManyReservationError} from "./reservation";
 
-const isBetween = require('dayjs/plugin/isBetween');
 const duration = require('dayjs/plugin/duration')
-dayjs.extend(isBetween);
 dayjs.extend(duration);
 
 
@@ -32,7 +30,7 @@ export class TimeOfDay {
         this._minutes = minutes ?? 0;
     }
 
-    atDate(day: Date): TimeOfDay {
+    atDate(day: Date): this {
         this.today = new Date();
         this.today.setUTCFullYear(day.getUTCFullYear(), day.getUTCMonth(), day.getDate());
         return this;
