@@ -46,7 +46,7 @@ describe('maitred', () => {
         const tables = [new Table(8)];
         const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
-        expect(maitred.willAccept(date, [validReservation], candidate)).toBe(false);
+        expect(maitred.willAccept(date, [candidate], validReservation)).toBe(false);
     });
 
     test('does accept valid reservation on empty table at correct time without existing reservations', () => {
@@ -62,12 +62,27 @@ describe('maitred', () => {
 
     test('does accept valid reservation on empty table at correct time', () => {
         const date = new Date();
-        date.setHours(12, 30);
+        date.setHours(14, 30);
 
         const validReservation = new ReservationDTO(date.toISOString(), "my@email.com", 'My Name', 4);
         const tables = [new Table(8)];
         const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
-        expect(maitred.willAccept(date, [candidate], validReservation)).toBe(true);
+        expect(maitred.willAccept(date, [validReservation], candidate)).toBe(true);
+    });
+
+    test('cannot accept valid reservation if fully booked tables at correct time', () => {
+        const twelveThirty = new Date();
+        twelveThirty.setHours(12, 30);
+        const one = new Date();
+        one.setHours(13, 0);
+
+        const reservation1 = new ReservationDTO(twelveThirty.toISOString(), "me@email.com", 'Me', 7);
+        const reservation2 = new ReservationDTO(one.toISOString(), "my@email.com", 'Myself', 2);
+        const reservation3 = new ReservationDTO(one.toISOString(), "i@email.com", 'And I', 4);
+        const tables = [new Table(8), new Table(6)];
+        const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
+
+        expect(maitred.willAccept(twelveThirty, [reservation1, reservation2], reservation3)).toBe(false);
     });
 });

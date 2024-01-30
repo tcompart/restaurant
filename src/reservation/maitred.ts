@@ -66,9 +66,14 @@ export class Seating {
         return this._quantity;
     }
 
-    overlaps(reservation: Reservation): boolean {
-        const date: Date = new Date(reservation.at);
-        return this._starts <= date && this._ends >= date;
+    overlaps(reservation: Reservation, seatingDuration: Duration): boolean {
+        const start: Date = new Date(reservation.at);
+        const end: Date = dayjs(new Date(reservation.at)).add(seatingDuration).toDate();
+        //TODO other reservations are still ongoing (so start is before new start)
+
+        const reservationIsWithinStart = start.valueOf() >= this._starts.valueOf() && start.valueOf() <= this._ends.valueOf();
+        const reservationIsWithinEnd = end.valueOf() >= this._starts.valueOf() && end.valueOf() <= this._ends.valueOf();
+        return reservationIsWithinStart || reservationIsWithinEnd;
     }
 }
 
@@ -101,7 +106,7 @@ export class Maitred {
         } else {
             const seating = new Seating(reservation, this.seatingDuration);
             const relevantReservations = existingReservations
-                .filter(reservation => seating.overlaps(reservation));
+                .filter(reservation => seating.overlaps(reservation, this.seatingDuration));
             const tables = this.allocate(relevantReservations, this.tables);
             return tables.length > 0;
         }
@@ -109,8 +114,6 @@ export class Maitred {
     }
 
     private allocate(relevantReservations: Reservation[], tables: Table[]): Table[] {
-        tables.sort((a,b) => a.numberOfSeats > b.numberOfSeats ? 1 : -1);
-        relevantReservations.sort((a,b) => a.quantity > b.quantity ? 1 : -1);
         // find for the relevant reservations the correct tables;
         for (const relevantReservation of relevantReservations) {
             const table = tables.filter(table => table.numberOfSeats >= relevantReservation.quantity).shift();
