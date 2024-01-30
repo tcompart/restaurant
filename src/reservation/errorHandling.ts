@@ -1,5 +1,5 @@
 import {Response} from 'express';
-import {BadRequest} from "./reservation";
+import {BadRequest, TooManyReservationError} from "./reservation";
 
 export class ErrorHandling {
     private _resp: Response;
@@ -13,6 +13,10 @@ export class ErrorHandling {
             console.log("BadRequest was catched: ", e);
             this._resp.status(400);
             this._resp.send('Bad request.');
+        } else if (e instanceof TooManyReservationError) {
+            console.log("TooManyReservationError was catched: ", e);
+            this._resp.status(409);
+            this._resp.send('Too many reservations. Conflict.');
         } else {
             this._resp.status(500);
         }
