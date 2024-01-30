@@ -18,6 +18,16 @@ export class BadRequest implements Error {
     name: string;
 }
 
+export class TooManyReservationError implements Error {
+    constructor() {
+        this.message = "Too many reservations";
+        this.name = "409";
+    }
+
+    message: string;
+    name: string;
+
+}
 
 export enum Task {
     CompletedTask = "Completed",
@@ -39,8 +49,10 @@ export class Repository implements ReservationRepository {
     }
 
     async findReservationsOnDate(at: Date): Promise<Reservation[] | null> {
-        const start = new Date(at.setHours(0, 0, 0, 0));
-        const end = new Date(at.setHours(23, 59, 59, 59));
+        const copy = new Date();
+        copy.setUTCFullYear(at.getUTCFullYear(), at.getUTCMonth(), at.getDate());
+        const start = new Date(copy.setHours(0, 0, 0, 0));
+        const end = new Date(copy.setHours(23, 59, 59, 59));
         return prisma.reservation.findMany({
             where: {
                 at: {

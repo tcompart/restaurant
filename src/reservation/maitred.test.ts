@@ -1,6 +1,7 @@
 import {createTimeOfDay, Maitred, Table} from "./maitred";
 import dayjs from "dayjs";
 import {ReservationDTO} from "./reservation.dto";
+import {TooManyReservationError} from "./reservation";
 
 const duration = require('dayjs/plugin/duration')
 dayjs.extend(duration)
@@ -46,7 +47,7 @@ describe('maitred', () => {
         const tables = [new Table(8)];
         const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
-        expect(maitred.willAccept(date, [candidate], validReservation)).toBe(false);
+        expect(() => maitred.willAccept(date, [candidate], validReservation)).toThrow(TooManyReservationError);
     });
 
     test('does accept valid reservation on empty table at correct time without existing reservations', () => {
@@ -62,7 +63,7 @@ describe('maitred', () => {
 
     test('does accept valid reservation on empty table at correct time', () => {
         const date = new Date();
-        date.setHours(14, 30);
+        date.setHours(15, 0);
 
         const validReservation = new ReservationDTO(date.toISOString(), "my@email.com", 'My Name', 4);
         const tables = [new Table(8)];
@@ -83,6 +84,6 @@ describe('maitred', () => {
         const tables = [new Table(8), new Table(6)];
         const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
-        expect(maitred.willAccept(twelveThirty, [reservation1, reservation2], reservation3)).toBe(false);
+        expect(() => maitred.willAccept(twelveThirty, [reservation1, reservation2], reservation3)).toThrow(TooManyReservationError);
     });
 });

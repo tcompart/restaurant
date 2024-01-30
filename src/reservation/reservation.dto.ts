@@ -1,5 +1,4 @@
 import {Reservation} from "./reservation";
-import {Table} from "./maitred";
 
 export class ReservationDTO implements Reservation {
     private readonly _at!: string;
