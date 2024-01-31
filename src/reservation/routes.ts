@@ -2,7 +2,8 @@ import {Request, Response} from 'express';
 import {getReservationRepository} from "./service-injection";
 import {ErrorHandling} from "./errorHandling";
 import {ReservationController} from "./reservation.ctlr";
-import {Table} from "./maitred";
+
+import {Table} from "./table";
 
 export function findAvailableTables(tables: Table[] = []): Table[] {
     return tables;
