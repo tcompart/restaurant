@@ -30,11 +30,11 @@ export class ReservationController {
         if (reservation?.at) {
           try {
             const reservations = await this._repository.findReservationsOnDate(reservation?.at);
-            const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(22), dayjs.duration(90), this._tables, true);
-            if (maitred.willAccept(reservation?.at, reservations ?? [], reservation)) {
+            const maitre = new Maitred(new TimeOfDay(8), new TimeOfDay(22), dayjs.duration(90), this._tables, true);
+            if (maitre.willAccept(reservation?.at, reservations ?? [], reservation)) {
               resolve(this._repository.create(reservation));
             }
-            reject(new BadRequest("Maître D is not accept reservation", "400"));
+            reject(new BadRequest("Maître'D does not accept reservation", "400"));
           } catch (reason: any) {
             if (reason instanceof TooManyReservationError) {
               reject(new TooManyReservationError());
