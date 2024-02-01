@@ -1,7 +1,9 @@
-import {createTimeOfDay, Maitred, Table} from "./maitred";
+import {Maitred} from "./maitred";
 import dayjs from "dayjs";
 import {ReservationDTO} from "./reservation.dto";
 import {TooManyReservationError} from "./reservation";
+import {Table} from "./table";
+import {TimeOfDay} from "./timeOfDay";
 
 const duration = require('dayjs/plugin/duration')
 dayjs.extend(duration)
@@ -16,7 +18,7 @@ describe('maitred', () => {
     const candidate = new ReservationDTO(lunch.toISOString(), "candidate@email.com", 'I am the candidate', 4);
 
     test('does not accept without tables', () => {
-       const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
+       const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
 
        const date = new Date();
        date.setHours(10, 30);
@@ -24,7 +26,7 @@ describe('maitred', () => {
     });
 
     test('does not accept outside of hours', () => {
-        const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
+        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
 
         const date = new Date();
         date.setHours(7, 30);
@@ -32,7 +34,7 @@ describe('maitred', () => {
     });
 
     test('does not accept outside of hours later', () => {
-        const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
+        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
 
         const date = new Date();
         date.setHours(21);
@@ -45,7 +47,7 @@ describe('maitred', () => {
 
         const validReservation = new ReservationDTO(date.toISOString(), "my@email.com", 'My Name', 7);
         const tables = [new Table(8)];
-        const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
+        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
         expect(() => maitred.willAccept(date, [candidate], validReservation)).toThrow(TooManyReservationError);
     });
@@ -56,7 +58,7 @@ describe('maitred', () => {
 
         const validReservation = new ReservationDTO(date.toISOString(), "my@email.com", 'My Name', 4);
         const tables = [new Table(8)];
-        const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
+        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
         expect(maitred.willAccept(date, [], validReservation)).toBe(true);
     });
@@ -67,7 +69,7 @@ describe('maitred', () => {
 
         const validReservation = new ReservationDTO(date.toISOString(), "my@email.com", 'My Name', 4);
         const tables = [new Table(8)];
-        const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
+        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
         expect(maitred.willAccept(date, [validReservation], candidate)).toBe(true);
     });
@@ -82,7 +84,7 @@ describe('maitred', () => {
         const reservation2 = new ReservationDTO(one.toISOString(), "my@email.com", 'Myself', 2);
         const reservation3 = new ReservationDTO(one.toISOString(), "i@email.com", 'And I', 4);
         const tables = [new Table(8), new Table(6)];
-        const maitred = new Maitred(createTimeOfDay(8), createTimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
+        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
         expect(() => maitred.willAccept(twelveThirty, [reservation1, reservation2], reservation3)).toThrow(TooManyReservationError);
     });
