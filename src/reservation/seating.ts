@@ -10,6 +10,7 @@ export class Seating {
     constructor(reservation: Reservation, seatingDuration: Duration) {
         this._starts = new Date((reservation.at as Date));
         this._ends = dayjs(reservation.at).add(seatingDuration).toDate();
+        this._quantity = reservation.quantity;
     }
 
     overlaps(reservation: Reservation, seatingDuration: Duration): boolean {

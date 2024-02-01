@@ -7,9 +7,6 @@ import {TimeOfDay} from "./timeOfDay";
 
 const duration = require('dayjs/plugin/duration')
 dayjs.extend(duration)
-const isBetween = require('dayjs/plugin/isBetween');
-dayjs.extend(isBetween);
-
 
 describe('maitred', () => {
 
