@@ -1,9 +1,9 @@
 import {Maitred} from "./maitred";
 import dayjs from "dayjs";
 import {ReservationDTO} from "./reservation.dto";
-import {TooManyReservationError} from "./reservation";
 import {Table} from "./table";
 import {TimeOfDay} from "./timeOfDay";
+import {TooManyReservationError} from "./errorHandling";
 
 const duration = require('dayjs/plugin/duration')
 dayjs.extend(duration)

@@ -1,6 +1,7 @@
 import {Identifiable, ReservationImpl} from "./reservation.impl";
-import {Reservation, ReservationRepository} from "./reservation";
+import {Reservation} from "./reservation";
 import {v4 as uuid} from "uuid";
+import {ReservationRepository} from "./reservationRepository";
 
 export class FakeDatabase extends Array<ReservationImpl> implements ReservationRepository {
   create(reservation: Reservation): Promise<Identifiable> {

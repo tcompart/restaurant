@@ -1,13 +1,13 @@
-import {Repository} from './reservation';
 import {ReservationImpl} from "./reservation.impl";
 import {validate} from "uuid";
 import {PrismaClientKnownRequestError} from "prisma/prisma-client/runtime/library";
+import {DatabaseReservationRepository} from "./databaseReservationRepository";
 
 describe('reservation', () => {
 
     describe('repository', () => {
        test('create and delete entry', async () => {
-           const repository = new Repository();
+           const repository = new DatabaseReservationRepository();
            const taskPromise = await repository.create(new ReservationImpl('2023-03-23 19:00', 'my@email.com', 'Franz', 2));
            expect(taskPromise).toHaveProperty("id");
            expect(taskPromise.id).not.toBeNull();
@@ -16,7 +16,7 @@ describe('reservation', () => {
            await expect(repository.delete(taskPromise.id!)).rejects.toMatchObject({} as PrismaClientKnownRequestError);
        });
        test('create multiple and find one', async () => {
-           const repository = new Repository();
+           const repository = new DatabaseReservationRepository();
            const taskPromise = await repository.create(new ReservationImpl('2023-01-31 19:00', 'my@email.com', 'Dieter', 2))
                .then(id => repository.create(new ReservationImpl('2023-01-31 19:00', 'myself@email.com', 'Holger', 2)))
                .then(id => repository.create(new ReservationImpl('2023-01-31 16:00', 'me@email.com', 'Michael', 2)));
