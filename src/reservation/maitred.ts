@@ -1,9 +1,10 @@
 import {Duration} from "dayjs/plugin/duration";
 import dayjs from "dayjs";
-import {Reservation, TooManyReservationError} from "./reservation";
+import {Reservation} from "./reservation";
 import {Table} from "./table";
 import {TimeOfDay} from "./timeOfDay";
 import {Seating} from "./seating";
+import {TooManyReservationError} from "./errorHandling";
 
 export class Maitred {
     private opens: TimeOfDay;

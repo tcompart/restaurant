@@ -1,10 +1,11 @@
 import {ReservationDTO} from "./reservation.dto";
 import {Identifiable, ReservationImpl} from "./reservation.impl";
-import {BadRequest, ReservationRepository, TooManyReservationError} from "./reservation";
 import {Maitred} from "./maitred";
 import dayjs from "dayjs";
 import {Table} from "./table";
 import {TimeOfDay} from "./timeOfDay";
+import {ReservationRepository} from "./reservationRepository";
+import {BadRequest, TooManyReservationError} from "./errorHandling";
 
 const duration = require('dayjs/plugin/duration')
 dayjs.extend(duration)

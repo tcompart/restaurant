@@ -1,6 +1,5 @@
-import {ErrorHandling} from "./errorHandling";
+import {BadRequest, ErrorHandling} from "./errorHandling";
 import { Response } from 'express';
-import {BadRequest} from "./reservation";
 jest.mock('express');
 
 let status = 200;

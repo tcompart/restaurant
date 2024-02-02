@@ -1,9 +1,8 @@
-import {Repository} from "./reservation/reservation";
-
 const express = require('express')
 const bodyParser = require('body-parser')
 const {createReservationRoute} = require("./reservation/routes");
 import * as dotenv from 'dotenv'
+import {DatabaseReservationRepository} from "./reservation/databaseReservationRepository";
 
 dotenv.config() // Load the environment variables
 console.log(`The connection URL is ${process.env.DATABASE_URL}`)
@@ -21,7 +20,7 @@ app.get('/', (_req, res) => {
   })
 })
 
-app.post('/reservations', createReservationRoute(new Repository()))
+app.post('/reservations', createReservationRoute(new DatabaseReservationRepository()))
 
 const server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

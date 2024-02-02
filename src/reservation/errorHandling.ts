@@ -1,5 +1,24 @@
 import {Response} from 'express';
-import {BadRequest, TooManyReservationError} from "./reservation";
+
+export class BadRequest implements Error {
+    constructor(message: string, name: string) {
+        this.message = message;
+        this.name = name;
+    }
+
+    message: string;
+    name: string;
+}
+
+export class TooManyReservationError implements Error {
+    constructor() {
+        this.message = "Too many reservations";
+        this.name = "409";
+    }
+
+    message: string;
+    name: string;
+}
 
 export class ErrorHandling {
     private _resp: Response;
