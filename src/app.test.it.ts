@@ -4,7 +4,17 @@ describe('Restaurant', () => {
   test('says Hello World', async () => {
     const result = await axios.get('http://127.0.0.1:3000');
     expect(result.status).toBe(200);
-    expect(result.data).toStrictEqual({"msg": "Hello World"});
+    expect(result.data).toStrictEqual({
+      "_links": [
+        {
+          "_href": "http://farmnw267.farmnet.intra:3000/reservation",
+          "_rel": "urn:addReservation",
+        },
+        {
+          "_href": "http://farmnw267.farmnet.intra:3000/reservations",
+          "_rel": "urn:reservations",
+        }
+      ]});
   });
 
   test('post reservation with wrong fields is punished with 400 bad request', async () => {

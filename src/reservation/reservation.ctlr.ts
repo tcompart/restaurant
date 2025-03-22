@@ -6,6 +6,7 @@ import {Table} from "./table";
 import {TimeOfDay} from "./timeOfDay";
 import {ReservationRepository} from "./reservationRepository";
 import {BadRequest, TooManyReservationError} from "./errorHandling";
+import {Reservation} from "./reservation";
 
 const duration = require('dayjs/plugin/duration')
 dayjs.extend(duration)
@@ -45,5 +46,9 @@ export class ReservationController {
         }
       })();
     });
+  }
+
+  get(body: any) : Reservation[] {
+    return [];
   }
 }
