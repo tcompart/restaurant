@@ -8,6 +8,11 @@ import {Table} from "./table";
 export function findAvailableTables(tables: Table[] = []): Table[] {
     return tables;
 }
+
+export function getReservationController(repo = getReservationRepository()) {
+    return new ReservationController(repo, findAvailableTables([new Table(10)]));
+}
+
 export function createReservationRoute(repo = getReservationRepository()) {
     return (req: Request, res: Response) => {
         const onfulfilled = () => {
@@ -17,7 +22,16 @@ export function createReservationRoute(repo = getReservationRepository()) {
                 "msg": "Reservation accepted."
             }))
         };
-        new ReservationController(repo, findAvailableTables([new Table(10)])).post(req.body)
-            .then(onfulfilled).catch(new ErrorHandling(res).onRejected)
+        getReservationController().post(req.body)
+            .then(onfulfilled)
+            .catch(new ErrorHandling(res).onRejected)
+    };
+}
+
+export function getReservationsRoute(repo = getReservationRepository()) {
+    return (req: Request, res: Response) => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8');
+        res.status(200);
+        res.send(getReservationController().get(req.body));
     };
 }
