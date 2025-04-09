@@ -6,6 +6,11 @@ import {DatabaseReservationRepository} from "./databaseReservationRepository";
 describe('reservation', () => {
 
     describe('repository', () => {
+
+        beforeEach(() => {
+            new DatabaseReservationRepository().deleteAll();
+        })
+
        test('create and delete entry', async () => {
            const repository = new DatabaseReservationRepository();
            const taskPromise = await repository.create(new ReservationImpl('2023-03-23 19:00', 'my@email.com', 'Franz', 2));

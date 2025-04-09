@@ -32,6 +32,21 @@ export class DatabaseReservationRepository implements ReservationRepository {
         })
     }
 
+    deleteAll(): Promise<number | null> {
+        return new Promise<number | null>((resolve, rejects) => {
+            (async () => {
+                try {
+                    const result = await prisma.reservation.deleteMany();
+                    if (result) {
+                        resolve(result.count);
+                    }
+                } catch (e) {
+                    rejects(new Error("Records to delete do not exist."));
+                }
+            })();
+        });
+    }
+
     delete(id: string): Promise<Identifiable | null> {
         return new Promise<Identifiable | null>((resolve, rejects) => {
             (async () => {
