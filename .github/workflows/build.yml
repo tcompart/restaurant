@@ -1,35 +1,48 @@
 name: Restaurant - Build and Analyze
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ main ]
+
 jobs:
   restaurant-build:
     name: Restaurant - Build and Test
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-      - uses: adambirds/docker-compose-action@v1.3.0
-        with:
-          test-container: "db"
-      - name: setup node
-        uses: actions/setup-node@master
-        with:
-          node-version: 21.1.x
-      # install application dependencies
+          node-version: '20'
+          cache: 'npm'
+
       - name: Install dependencies
+        run: npm ci
+
+      - name: Start Docker Compose
+        run: docker compose -f docker-compose.yml up -d
+
+      - name: Wait for Postgres to be ready
         run: |
-          npm install
-          npm install -g dotenv
-      # build and test the apps
-      - name: build and unit test
-        run: npm run test:unit
-      - name: run integration tests
-        run: npm run test:ci
+          echo "Waiting for PostgreSQL..."
+          for i in {1..10}; do
+            docker compose exec db pg_isready -U root && echo "Postgres is ready!" && exit 0
+            echo "Not ready yet... retrying in 3s"
+            sleep 3
+          done
+          echo "Postgres did not become ready in time" && exit 1
+
+      - name: Run tests
+        run: npm test
+
+      - name: Stop Docker Compose
+        if: always()
+        run: docker compose -f docker-compose.yml down
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
