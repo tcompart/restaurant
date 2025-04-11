@@ -1,10 +1,10 @@
 name: Restaurant - Build and Analyze
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ main ]
+
 jobs:
   restaurant-build:
     name: Restaurant - Build and Test
@@ -26,15 +26,22 @@ jobs:
       - name: Start Docker Compose
         run: docker compose -f docker-compose.yml up -d
 
-      - name: Wait for DB to be ready
-        run: sleep 10 # oder besser: healthcheck oder wait-for-it
+      - name: Wait for Postgres to be ready
+        run: |
+          echo "Waiting for PostgreSQL..."
+          for i in {1..10}; do
+            docker compose exec db pg_isready -U root && echo "Postgres is ready!" && exit 0
+            echo "Not ready yet... retrying in 3s"
+            sleep 3
+          done
+          echo "Postgres did not become ready in time" && exit 1
 
       - name: Run tests
         run: npm test
 
       - name: Stop Docker Compose
         if: always()
-        run: docker compose down
+        run: docker compose -f docker-compose.yml down
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
