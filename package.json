@@ -12,7 +12,7 @@
     "test": "rm -rf coverage && npm run test:unit && npm run docker && npm run test:ci",
     "test:unit": "jest && mv coverage/coverage-final.json coverage/coverage-unit.json",
     "test:ci": "start-server-and-test start http://localhost:3000 ci",
-    "docker": "docker-compose up db --detach",
+    "docker": "docker compose up db --detach",
     "update": "npx npm-check-updates -u && npm i",
     "ci": "jest --testMatch='**/*.test.it.[jt]s?(x)' && mv coverage/coverage-final.json coverage/coverage-integration.json && npm run merge",
     "deploy": "npm test && cd docker && docker build .. -f ./Dockerfile  --no-cache -t restaurant",
