@@ -1,7 +1,16 @@
 import {Response} from 'express';
 
-export class UnexpectedError implements Error {
+class BaseError extends Error {
+    constructor(message: string) {
+        const trueProto = new.target.prototype;
+        super(message);
+        Object.setPrototypeOf(this, trueProto);
+    }
+}
+
+export class UnexpectedError extends BaseError {
     constructor(message: string, stack: Error) {
+        super(message);
         this.message = message;
         this.name = stack.name;
         this.error = stack;
@@ -12,8 +21,9 @@ export class UnexpectedError implements Error {
     error: Error;
 }
 
-export class BadRequest implements Error {
+export class BadRequest extends BaseError {
     constructor(message: string, name: string) {
+        super(message);
         this.message = message;
         this.name = name;
     }
@@ -22,8 +32,9 @@ export class BadRequest implements Error {
     name: string;
 }
 
-export class TooManyReservationError implements Error {
+export class TooManyReservationError extends BaseError {
     constructor() {
+        super("Too many reservations");
         this.message = "Too many reservations";
         this.name = "409";
     }
