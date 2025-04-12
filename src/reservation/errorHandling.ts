@@ -1,5 +1,17 @@
 import {Response} from 'express';
 
+export class UnexpectedError implements Error {
+    constructor(message: string, stack: Error) {
+        this.message = message;
+        this.name = stack.name;
+        this.error = stack;
+    }
+
+    name: string;
+    message: string;
+    error: Error;
+}
+
 export class BadRequest implements Error {
     constructor(message: string, name: string) {
         this.message = message;
@@ -21,7 +33,7 @@ export class TooManyReservationError implements Error {
 }
 
 export class ErrorHandling {
-    private _resp: Response;
+    private readonly _resp: Response;
 
     constructor(resp: Response) {
         this._resp = resp;
