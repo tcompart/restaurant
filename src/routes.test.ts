@@ -1,6 +1,5 @@
 import {Request, Response} from 'express';
 import {createReservationRoute} from "./routes";
-import now = jest.now;
 
 describe('routes', () => {
   test('can be created', () => {
@@ -13,7 +12,7 @@ describe('routes', () => {
     const today = new Date();
     const req = {body: {}} as Request;
     const res = {
-      status: (num) => {},
+      status: (num?) => {},
       send: (body?: any) => {}
     } as Response;
 

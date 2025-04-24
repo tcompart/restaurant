@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import {Reservation} from "./reservation";
-import {isValidDate} from "./validator.date";
+import {isValidDate} from "../validation/validator.date";
 
 export class Identifiable {
     id: string | null | undefined;
@@ -8,7 +8,7 @@ export class Identifiable {
 
 export class ReservationImpl extends Identifiable implements Reservation {
     at: Date;
-    private createdAt: Date;
+    private readonly createdAt: Date;
     email: string;
     name: string;
     quantity: number;

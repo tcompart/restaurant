@@ -7,10 +7,10 @@ import {Seating} from "./seating";
 import {TooManyReservationError} from "./errorHandling";
 
 export class Maitred {
-    private opens: TimeOfDay;
-    private lastSeating: TimeOfDay;
-    private seatingDuration: Duration;
-    private tables: Table[];
+    private readonly opens: TimeOfDay;
+    private readonly lastSeating: TimeOfDay;
+    private readonly seatingDuration: Duration;
+    private readonly tables: Table[];
     private readonly debug!: boolean;
 
     constructor(opens: TimeOfDay, lastSeating: TimeOfDay, seatingDuration: Duration, tables: Table[], debug = false) {
