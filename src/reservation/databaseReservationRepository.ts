@@ -2,6 +2,7 @@ import {PrismaClient} from '.prisma/client'
 import {ReservationRepository} from "./reservationRepository";
 import {Identifiable} from "./reservation.impl";
 import {Reservation} from "./reservation";
+import {UnexpectedError} from "./errorHandling";
 
 const prisma = new PrismaClient()
 
@@ -40,8 +41,9 @@ export class DatabaseReservationRepository implements ReservationRepository {
                     if (result) {
                         resolve(result.count);
                     }
-                } catch (err) {
-                    rejects(new Error("Records to delete do not exist: " + err));
+                } catch (e) {
+                    const error = new UnexpectedError("Record to delete does not exist.", e as Error);
+                    rejects(error);
                 }
             })();
         });
@@ -59,8 +61,9 @@ export class DatabaseReservationRepository implements ReservationRepository {
                     if (result) {
                         resolve(result);
                     }
-                } catch (err) {
-                    rejects(new Error("Record to delete does not exist: " + err));
+                } catch (e) {
+                    const error = new UnexpectedError("Record to delete does not exist.", e as Error);
+                    rejects(error);
                 }
             })();
         });
