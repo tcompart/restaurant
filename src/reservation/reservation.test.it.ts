@@ -1,7 +1,8 @@
 import {ReservationImpl} from "./reservation.impl";
 import {validate} from "uuid";
-import {PrismaClientKnownRequestError} from "prisma/prisma-client/runtime/library";
+import {PrismaClientKnownRequestError, PrismaClientValidationError} from "prisma/prisma-client/runtime/library";
 import {DatabaseReservationRepository} from "./databaseReservationRepository";
+import {ReservationDTO} from "./reservation.dto";
 
 describe('reservation', () => {
 
@@ -11,7 +12,12 @@ describe('reservation', () => {
             new DatabaseReservationRepository().deleteAll();
         })
 
-       test('create and delete entry', async () => {
+        test('create something unusable', async () => {
+            const repository = new DatabaseReservationRepository();
+            await expect(repository.create(null as unknown as ReservationDTO)).rejects.toMatchObject({} as PrismaClientValidationError);
+        });
+
+        test('create and delete entry', async () => {
            const repository = new DatabaseReservationRepository();
            const taskPromise = await repository.create(new ReservationImpl('2023-03-23 19:00', 'my@email.com', 'Franz', 2));
            expect(taskPromise).toHaveProperty("id");
@@ -20,11 +26,12 @@ describe('reservation', () => {
            expect(validate(taskPromise.id!)).toBe(true);
            await expect(repository.delete(taskPromise.id!)).rejects.toMatchObject({} as PrismaClientKnownRequestError);
        });
+
        test('create multiple and find one', async () => {
            const repository = new DatabaseReservationRepository();
            const taskPromise = await repository.create(new ReservationImpl('2023-01-31 19:00', 'my@email.com', 'Dieter', 2))
-               .then(id => repository.create(new ReservationImpl('2023-01-31 19:00', 'myself@email.com', 'Holger', 2)))
-               .then(id => repository.create(new ReservationImpl('2023-01-31 16:00', 'me@email.com', 'Michael', 2)));
+               .then(() => repository.create(new ReservationImpl('2023-01-31 19:00', 'myself@email.com', 'Holger', 2)))
+               .then(() => repository.create(new ReservationImpl('2023-01-31 16:00', 'me@email.com', 'Michael', 2)));
            expect(taskPromise).toHaveProperty("id");
            expect(taskPromise.id).not.toBeNull();
 

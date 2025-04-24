@@ -40,8 +40,8 @@ export class DatabaseReservationRepository implements ReservationRepository {
                     if (result) {
                         resolve(result.count);
                     }
-                } catch (e) {
-                    rejects(new Error("Records to delete do not exist."));
+                } catch (err) {
+                    rejects(new Error("Records to delete do not exist: " + err));
                 }
             })();
         });
@@ -59,8 +59,8 @@ export class DatabaseReservationRepository implements ReservationRepository {
                     if (result) {
                         resolve(result);
                     }
-                } catch (e) {
-                    rejects(new Error("Record to delete does not exist."));
+                } catch (err) {
+                    rejects(new Error("Record to delete does not exist: " + err));
                 }
             })();
         });

@@ -21,7 +21,7 @@ export class TooManyReservationError implements Error {
 }
 
 export class ErrorHandling {
-    private _resp: Response;
+    private readonly _resp: Response;
 
     constructor(resp: Response) {
         this._resp = resp;

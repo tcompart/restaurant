@@ -2,19 +2,19 @@
   "name": "restaurant",
   "version": "1.0.0",
   "description": "Code that fit's in your head",
-  "main": "src/app.js",
+  "main": "src/app.ts",
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
     "start": "./migrate-and-start.sh",
-    "build": "rimraf ./dist && ncc build ./src/app.js -o ./dist",
+    "build": "rimraf ./dist && ncc build src/app.ts -o ./dist",
     "test": "rm -rf coverage && npm run test:unit && npm run docker && npm run test:ci",
     "test:unit": "jest && mv coverage/coverage-final.json coverage/coverage-unit.json",
     "test:ci": "start-server-and-test start http://localhost:3000 ci",
     "docker": "docker compose up db --detach",
     "update": "npx npm-check-updates -u && npm i",
-    "ci": "jest --testMatch='**/*.test.it.[jt]s?(x)' && mv coverage/coverage-final.json coverage/coverage-integration.json && npm run merge",
+    "ci": "jest --testMatch='**/*.test.it.ts' && mv coverage/coverage-final.json coverage/coverage-integration.json && npm run merge",
     "deploy": "npm test && cd docker && docker build .. -f ./Dockerfile  --no-cache -t restaurant",
     "merge": "npx nyc report --reporter html --reporter text --reporter html --reporter cobertura --reporter lcov -t coverage --report-dir coverage/summary"
   },
@@ -32,6 +32,7 @@
     "@types/express": "^5.0.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.14.0",
+    "@types/supertest": "^6.0.3",
     "@types/uuid": "^10.0.0",
     "@vercel/ncc": "^0.38.3",
     "axios": "^1.8.4",
@@ -44,6 +45,7 @@
     "prisma": "^6.6.0",
     "rimraf": "^6.0.1",
     "start-server-and-test": "^2.0.11",
+    "supertest": "^7.1.0",
     "ts-jest": "^29.3.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

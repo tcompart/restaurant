@@ -2,7 +2,7 @@ import {Link, ResponseBody} from "./reservation/responsebody";
 
 const express = require('express')
 const bodyParser = require('body-parser')
-const {createReservationRoute} = require("./reservation/routes");
+const {createReservationRoute} = require("./routes");
 import * as dotenv from 'dotenv'
 import {DatabaseReservationRepository} from "./reservation/databaseReservationRepository";
 
@@ -19,7 +19,7 @@ const port = `${process.env.PORT}`;
 
 let host = os.hostname();
 
-app.get('/', (_req, res) => {
+app.get('/', (_req: any, res: any) => {
   console.log(host);
   res.setHeader('Content-Type', 'application/json;charset=utf-8');
   res.send(new ResponseBody([
@@ -43,7 +43,7 @@ const server = app.listen(port, () => {
   }
 });
 
-function handleExit(signal) {
+function handleExit(signal: any) {
   console.log(`Received ${signal}. Closing server properly.`);
   server.close(function () {
     console.log('HTTP server closed');
@@ -53,3 +53,5 @@ function handleExit(signal) {
 process.on('SIGINT', handleExit);
 process.on('SIGQUIT', handleExit);
 process.on('SIGTERM', handleExit);
+
+export default app;

@@ -1,8 +1,11 @@
-const axios = require('axios');
+import request from "supertest";
+import axios from "axios";
+import app from "./app";
 
 describe('Restaurant', () => {
   test('says Hello World', async () => {
     const result = await axios.get('http://127.0.0.1:3000');
+    expect(result.headers["content-type"]).toBe("application/json; charset=utf-8");
     expect(result.status).toBe(200);
     expect(result.data).toStrictEqual({
       "_links": [
@@ -15,6 +18,18 @@ describe('Restaurant', () => {
           "_rel": "urn:reservations",
         }
       ]});
+  });
+
+  test('application is an http app', async () => {
+    request(app)
+        .get('/')
+        .expect('Content-Type', /json/)
+        .expect('Content-Length', '187')
+        .expect(200)
+        .end(function(err, res) {
+          if (err) throw err;
+          expect(res.body._links[0]._rel).toBe("urn:addReservation");
+        });
   });
 
   test('post reservation with wrong fields is punished with 400 bad request', async () => {

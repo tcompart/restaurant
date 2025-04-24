@@ -1,9 +1,8 @@
-import * as url from "url";
-
 export class Link {
 
     private readonly _rel: string;
     private readonly _href: URL;
+
     constructor(rel: string, href: URL) {
         this._rel = rel;
         this._href = href;
