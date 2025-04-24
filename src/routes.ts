@@ -29,9 +29,9 @@ export function createReservationRoute() {
 }
 
 export function getReservationsRoute() {
-    return (req: Request, res: Response) => {
+    return (res: Response) => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8');
         res.status(200);
-        res.send(getReservationController().get(req.body));
+        res.send(getReservationController().get());
     };
 }
