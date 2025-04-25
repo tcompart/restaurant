@@ -1,16 +1,14 @@
 import {Link, ResponseBody} from "./reservation/responsebody";
 
-const express = require('express')
-const bodyParser = require('body-parser')
-const {createReservationRoute} = require("./routes");
 import * as dotenv from 'dotenv'
-import {DatabaseReservationRepository} from "./reservation/databaseReservationRepository";
 
 import os from "os";
 
-dotenv.config() // Load the environment variables
-console.log(`The connection URL is ${process.env.DATABASE_URL}`)
+import {createReservationRoute} from "./routes";
+import bodyParser from "body-parser";
+import express from "express";
 
+dotenv.config() // Load the environment variables
 
 const app = express()
 app.disable("x-powered-by");
@@ -20,7 +18,6 @@ const port = `${process.env.PORT}`;
 let host = os.hostname();
 
 app.get('/', (_req: any, res: any) => {
-  console.log(host);
   res.setHeader('Content-Type', 'application/json;charset=utf-8');
   res.send(new ResponseBody([
       new Link("urn:addReservation", new URL(host + "/reservation")),
@@ -28,8 +25,8 @@ app.get('/', (_req: any, res: any) => {
   ]));
 })
 
-app.post('/reservations', createReservationRoute(new DatabaseReservationRepository()))
-app.post('/reservations', createReservationRoute(new DatabaseReservationRepository()))
+app.post('/reservations', createReservationRoute())
+app.post('/reservations', createReservationRoute())
 
 const server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
@@ -43,8 +40,7 @@ const server = app.listen(port, () => {
   }
 });
 
-function handleExit(signal: any) {
-  console.log(`Received ${signal}. Closing server properly.`);
+function handleExit() {
   server.close(function () {
     console.log('HTTP server closed');
   });
