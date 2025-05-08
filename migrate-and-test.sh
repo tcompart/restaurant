@@ -8,4 +8,4 @@ fi
 docker run -v /var/run/docker.sock:/var/run/docker.sock -d --name restaurant-postgres -p 5455:5432 -e POSTGRES_PASSWORD=secret -e POSTGRES_USER=root -e POSTGRES_DB=postgres postgres:latest
 [ $? != 0 ] && exit 3;
 
-npm run test:ci
+npm run test

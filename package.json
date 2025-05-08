@@ -9,10 +9,11 @@
   "scripts": {
     "start": "./migrate-and-start.sh",
     "build": "rimraf ./dist && ncc build src/app.ts -o ./dist",
-    "test": "rm -rf coverage && npm run test:unit && npm run docker && npm run test:ci",
+    "test": "rm -rf coverage && npm run test:unit && npm run docker:up && npm run test:ci && npm run docker:down && npm run merge",
     "test:unit": "jest && mv coverage/coverage-final.json coverage/coverage-unit.json",
     "test:ci": "start-server-and-test start http://localhost:3000 ci",
-    "docker": "docker compose up db --detach",
+    "docker:up": "docker compose up db --detach",
+    "docker:down": "docker compose down db",
     "update": "npx npm-check-updates -u && npm i",
     "ci": "jest --testMatch='**/*.test.it.ts' && mv coverage/coverage-final.json coverage/coverage-integration.json && npm run merge",
     "deploy": "npm test && cd docker && docker build .. -f ./Dockerfile  --no-cache -t restaurant",
