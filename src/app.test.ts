@@ -3,6 +3,13 @@ import axios from "axios";
 import app from "./app";
 
 describe('Restaurant', () => {
+
+  afterAll(done => {
+    app.server.close(() => {
+      setTimeout(done, 100)
+    })
+  })
+
   test('says Hello World', async () => {
     const result = await axios.get('http://127.0.0.1:3000');
     expect(result.headers["content-type"]).toBe("application/json; charset=utf-8");

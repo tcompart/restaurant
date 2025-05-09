@@ -31,7 +31,7 @@ app.get('/', (_req: any, res: any) => {
 app.post('/reservations', createReservationRoute(new DatabaseReservationRepository()))
 app.post('/reservations', createReservationRoute(new DatabaseReservationRepository()))
 
-const server = app.listen(port, () => {
+app.server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
   if (port === '443') {
     host = 'https://' + host;
@@ -45,7 +45,7 @@ const server = app.listen(port, () => {
 
 function handleExit(signal: any) {
   console.log(`Received ${signal}. Closing server properly.`);
-  server.close(function () {
+  app.server.close(function () {
     console.log('HTTP server closed');
   });
 }

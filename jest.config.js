@@ -8,6 +8,6 @@ module.exports = {
   coverageReporters: ["json"],
   setupFiles: ["dotenv/config"],
   collectCoverage: true,
-  maxWorkers: 2,
+  maxWorkers: 1,
   coverageDirectory: 'coverage'
 };
