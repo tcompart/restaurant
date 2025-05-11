@@ -1,8 +1,11 @@
 import request from "supertest";
 import axios from "axios";
 import app from "./app";
+import os from "os";
 
 describe('Restaurant', () => {
+
+  let host = os.hostname();
 
   afterAll(done => {
     app.server.close(() => {
@@ -17,11 +20,11 @@ describe('Restaurant', () => {
     expect(result.data).toStrictEqual({
       "_links": [
         {
-          "_href": "http://farmnw267.farmnet.intra:3000/reservation",
+          "_href": `http://${host}:3000/reservation`,
           "_rel": "urn:addReservation",
         },
         {
-          "_href": "http://farmnw267.farmnet.intra:3000/reservations",
+          "_href": `http://${host}:3000/reservations`,
           "_rel": "urn:reservations",
         }
       ]});
@@ -31,7 +34,6 @@ describe('Restaurant', () => {
     request(app)
         .get('/')
         .expect('Content-Type', /json/)
-        .expect('Content-Length', '187')
         .expect(200)
         .end(function(err, res) {
           if (err) throw err;
