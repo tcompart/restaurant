@@ -5,7 +5,7 @@ import os from "os";
 
 describe('Restaurant', () => {
 
-  let host = os.hostname();
+  let host = os.hostname().toLowerCase();
 
   afterAll(done => {
     app.server.close(() => {
