@@ -1,4 +1,4 @@
-Restaurant [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tcompart-restaurant&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=tcompart-restaurant)
+Restaurant [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tcompart_restaurant&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=tcompart_restaurant)
 ==========
 
 Development process
