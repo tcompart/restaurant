@@ -1,4 +1,4 @@
-import {Maitred} from "./maitred";
+import MaitreDeSalle from "./maitreDeSalle";
 import dayjs from "dayjs";
 import {ReservationDTO} from "./reservation.dto";
 import {Table} from "./table";
@@ -8,34 +8,34 @@ import {TooManyReservationError} from "./errorHandling";
 const duration = require('dayjs/plugin/duration')
 dayjs.extend(duration)
 
-describe('maitred', () => {
+describe('Maître de Salle', () => {
 
     const lunch = new Date();
     lunch.setHours(12);
     const candidate = new ReservationDTO(lunch.toISOString(), "candidate@email.com", 'I am the candidate', 4);
 
     test('does not accept without tables', () => {
-       const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
+       const maitreDeSalle = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
 
        const date = new Date();
        date.setHours(10, 30);
-       expect(maitred.willAccept(date, [], candidate)).toBe(false);
+       expect(maitreDeSalle.willAccept(date, [], candidate)).toBe(false);
     });
 
     test('does not accept outside of hours', () => {
-        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
+        const maitreDeSalle = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
 
         const date = new Date();
         date.setHours(7, 30);
-        expect(maitred.willAccept(date, [], candidate)).toBe(false);
+        expect(maitreDeSalle.willAccept(date, [], candidate)).toBe(false);
     });
 
     test('does not accept outside of hours later', () => {
-        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
+        const maitreDeSalle = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), []);
 
         const date = new Date();
         date.setHours(21);
-        expect(maitred.willAccept(date, [], candidate)).toBe(false);
+        expect(maitreDeSalle.willAccept(date, [], candidate)).toBe(false);
     });
 
     test('does not accept if no tables available', () => {
@@ -44,9 +44,9 @@ describe('maitred', () => {
 
         const validReservation = new ReservationDTO(date.toISOString(), "my@email.com", 'My Name', 7);
         const tables = [new Table(8)];
-        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
+        const maitreDeSalle = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
-        expect(() => maitred.willAccept(date, [candidate], validReservation)).toThrow(TooManyReservationError);
+        expect(() => maitreDeSalle.willAccept(date, [candidate], validReservation)).toThrow(TooManyReservationError);
     });
 
     test('does accept valid reservation on empty table at correct time without existing reservations', () => {
@@ -55,9 +55,9 @@ describe('maitred', () => {
 
         const validReservation = new ReservationDTO(date.toISOString(), "my@email.com", 'My Name', 4);
         const tables = [new Table(8)];
-        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
+        const maitreDeSalle = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
-        expect(maitred.willAccept(date, [], validReservation)).toBe(true);
+        expect(maitreDeSalle.willAccept(date, [], validReservation)).toBe(true);
     });
 
     test('does accept valid reservation on empty table at correct time', () => {
@@ -66,9 +66,9 @@ describe('maitred', () => {
 
         const validReservation = new ReservationDTO(date.toISOString(), "my@email.com", 'My Name', 4);
         const tables = [new Table(8)];
-        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
+        const maitreDeSalle = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
-        expect(maitred.willAccept(date, [validReservation], candidate)).toBe(true);
+        expect(maitreDeSalle.willAccept(date, [validReservation], candidate)).toBe(true);
     });
 
     test('cannot accept valid reservation if fully booked tables at correct time', () => {
@@ -81,8 +81,8 @@ describe('maitred', () => {
         const reservation2 = new ReservationDTO(one.toISOString(), "my@email.com", 'Myself', 2);
         const reservation3 = new ReservationDTO(one.toISOString(), "i@email.com", 'And I', 4);
         const tables = [new Table(8), new Table(6)];
-        const maitred = new Maitred(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
+        const maitreDeSalle = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(20,30), dayjs.duration({minutes: 100}), tables);
 
-        expect(() => maitred.willAccept(twelveThirty, [reservation1, reservation2], reservation3)).toThrow(TooManyReservationError);
+        expect(() => maitreDeSalle.willAccept(twelveThirty, [reservation1, reservation2], reservation3)).toThrow(TooManyReservationError);
     });
 });

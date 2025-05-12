@@ -6,7 +6,7 @@ import {TimeOfDay} from "./timeOfDay";
 import {Seating} from "./seating";
 import {TooManyReservationError} from "./errorHandling";
 
-export class Maitred {
+export default class MaitreDeSalle {
     private readonly opens: TimeOfDay;
     private readonly lastSeating: TimeOfDay;
     private readonly seatingDuration: Duration;

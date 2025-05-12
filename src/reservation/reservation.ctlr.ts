@@ -1,6 +1,6 @@
 import {ReservationDTO} from "./reservation.dto";
 import {Identifiable, ReservationImpl} from "./reservation.impl";
-import {Maitred} from "./maitred";
+import MaitreDeSalle from "./maitreDeSalle";
 import dayjs from "dayjs";
 import {Table} from "./table";
 import {TimeOfDay} from "./timeOfDay";
@@ -44,11 +44,11 @@ export class ReservationController {
   private async applyReservation(reservation: any, resolve: (value: (PromiseLike<Identifiable> | Identifiable)) => void, reject: (reason?: any) => void) {
     try {
       const reservations = await this._repository.findReservationsOnDate(reservation?.at);
-      const maitre = new Maitred(new TimeOfDay(8), new TimeOfDay(22), dayjs.duration(90), this._tables, true);
+      const maitre = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(22), dayjs.duration(90), this._tables, true);
       if (maitre.willAccept(reservation?.at, reservations ?? [], reservation)) {
         resolve(this._repository.create(reservation));
       }
-      reject(new BadRequest("Maître'D does not accept reservation", "400"));
+      reject(new BadRequest("Maître De Salle does not accept reservation", "400"));
     } catch (reason: any) {
       if (reason instanceof TooManyReservationError) {
         reject(new TooManyReservationError());
