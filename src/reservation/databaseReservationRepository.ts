@@ -18,9 +18,12 @@ export class DatabaseReservationRepository implements ReservationRepository {
         });
     }
 
-    async findReservationsOnDate(at: Date): Promise<Reservation[] | null> {
+    async read(at: Date, max: Date = new Date()): Promise<Reservation[] | null> {
         const copy = new Date();
         copy.setUTCFullYear(at.getUTCFullYear(), at.getUTCMonth(), at.getDate());
+        if (at.getTime() > max.getTime()) {
+            throw new UnexpectedError("Unable to read reservations.", new Error("Date is in the future."));
+        }
         const start = new Date(copy.setHours(0, 0, 0, 0));
         const end = new Date(copy.setHours(23, 59, 59, 59));
         return prisma.reservation.findMany({

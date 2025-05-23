@@ -3,7 +3,7 @@ import {getReservationRepository} from "./reservation/service-injection";
 import {ErrorHandling} from "./reservation/errorHandling";
 import {ReservationController} from "./reservation/reservation.ctlr";
 
-import {Table} from "./reservation/table";
+import Table from "./reservation/table";
 
 export function findAvailableTables(tables: Table[] = []): Table[] {
     return tables;

@@ -36,7 +36,7 @@ describe('reservation', () => {
            expect(taskPromise.id).not.toBeNull();
 
            const date = new Date(2023, 0, 31, 16, 0);
-           const reservationsOnDate = await repository.findReservationsOnDate(date);
+           const reservationsOnDate = await repository.read(date);
            expect(reservationsOnDate).toHaveLength(3);
 
            expect(reservationsOnDate).toEqual(expect.arrayContaining([

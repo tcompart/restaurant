@@ -1,4 +1,4 @@
-import {Table} from "./table";
+import Table from "./table";
 import {Seating} from "./seating";
 import {ReservationDTO} from "./reservation.dto";
 import {Reservation} from "./reservation";

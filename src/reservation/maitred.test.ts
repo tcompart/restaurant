@@ -1,7 +1,7 @@
 import MaitreDeSalle from "./maitreDeSalle";
 import dayjs from "dayjs";
 import {ReservationDTO} from "./reservation.dto";
-import {Table} from "./table";
+import Table from "./table";
 import {TimeOfDay} from "./timeOfDay";
 import {TooManyReservationError} from "./errorHandling";
 

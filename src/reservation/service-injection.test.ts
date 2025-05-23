@@ -28,7 +28,7 @@ describe('service-injection', () => {
   test('can find created reservations', () => {
     const database = new FakeDatabase();
     database.create(reservation);
-    const reservations =  database.findReservationsOnDate(today);
+    const reservations =  database.read(today);
     expect(reservations).resolves.toHaveLength(1);
     expect(reservations).resolves.toBeDefined();
     const stored = database.pop();

@@ -2,7 +2,7 @@ import {ReservationDTO} from "./reservation.dto";
 import {Identifiable, ReservationImpl} from "./reservation.impl";
 import MaitreDeSalle from "./maitreDeSalle";
 import dayjs from "dayjs";
-import {Table} from "./table";
+import Table from "./table";
 import {TimeOfDay} from "./timeOfDay";
 import {ReservationRepository} from "./reservationRepository";
 import {BadRequest, TooManyReservationError} from "./errorHandling";
@@ -43,7 +43,7 @@ export class ReservationController {
 
   private async applyReservation(reservation: any, resolve: (value: (PromiseLike<Identifiable> | Identifiable)) => void, reject: (reason?: any) => void) {
     try {
-      const reservations = await this._repository.findReservationsOnDate(reservation?.at);
+      const reservations = await this._repository.read(reservation?.at);
       const maitre = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(22), dayjs.duration(90), this._tables, true);
       if (maitre.willAccept(reservation?.at, reservations ?? [], reservation)) {
         resolve(this._repository.create(reservation));

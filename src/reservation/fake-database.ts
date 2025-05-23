@@ -11,7 +11,7 @@ export class FakeDatabase extends Array<ReservationImpl> implements ReservationR
     return Promise.resolve(reservationImpl);
   }
 
-  findReservationsOnDate(at: Date): Promise<Reservation[] | null> {
+  read(at: Date): Promise<Reservation[] | null> {
     return Promise.resolve(this.filter(r => new Date(r.at).toDateString() === at.toDateString()));
   }
 

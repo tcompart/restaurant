@@ -1,6 +1,6 @@
 import {Seating} from "./seating";
 
-export class Table {
+export default class Table {
     private readonly _numberOfSeats: number;
 
     constructor(numberOfSeats: number) {
