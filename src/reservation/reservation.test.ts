@@ -52,6 +52,9 @@ describe('reservation', () => {
 
         await reservationController.post(new ReservationDTO("2023-11-11 10:00", "juliad@example.net", "Julia Domna", 8));
         await reservationController.post(new ReservationDTO("2023-11-12 19:00", "juliad@example.net", "Julia Domna", 9));
+
+        const reservations = await reservationController.get();
+        expect(reservations).toHaveLength(2);
     });
 
     it.each([

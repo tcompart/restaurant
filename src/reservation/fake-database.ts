@@ -11,8 +11,11 @@ export class FakeDatabase extends Array<ReservationImpl> implements ReservationR
     return Promise.resolve(reservationImpl);
   }
 
-  read(at: Date): Promise<Reservation[] | null> {
-    return Promise.resolve(this.filter(r => new Date(r.at).toDateString() === at.toDateString()));
+  async read(at: Date, max?: Date): Promise<Reservation[]> {
+    if (max && at && at.getTime() < max.getTime()) {
+      return this.filter(r => r.at >= at && r.at <= max);
+    }
+    return this.filter(r => new Date(r.at).toDateString() === at.toDateString());
   }
 
   removeElementWithId = (value: string): Identifiable | null => {

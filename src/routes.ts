@@ -29,9 +29,11 @@ export function createReservationRoute() {
 }
 
 export function getReservationsRoute() {
-    return (res: Response) => {
+    return (req: any, res: any) => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8');
         res.status(200);
-        res.send(getReservationController().get());
+        getReservationController().get()
+            .then(reservations => res.send({"reservations": reservations}))
+            .catch(err => res.send(err));
     };
 }
