@@ -13,11 +13,17 @@ dayjs.extend(duration)
 
 export class ReservationController {
   private readonly _repository: ReservationRepository;
-  private readonly _tables: Table[];
+  private readonly _maitreDeSalle: MaitreDeSalle;
 
   constructor(db: ReservationRepository, tables: Table[]) {
     this._repository = db;
-    this._tables = tables;
+    this._maitreDeSalle = new MaitreDeSalle(
+      new TimeOfDay(8),
+      new TimeOfDay(20, 30),
+      dayjs.duration({minutes: 100}),
+      tables,
+      false
+    );
   }
 
   post(reservationDTO: ReservationDTO): Promise<Identifiable> {
@@ -41,23 +47,26 @@ export class ReservationController {
     return reservation;
   }
 
-  private async applyReservation(reservation: any, resolve: (value: (PromiseLike<Identifiable> | Identifiable)) => void, reject: (reason?: any) => void) {
+  private async applyReservation(reservation: ReservationImpl, resolve: (value: (PromiseLike<Identifiable> | Identifiable)) => void, reject: (reason?: any) => void) {
     try {
       const reservations = await this._repository.read(reservation?.at);
-      const maitre = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(22), dayjs.duration(90), this._tables, true);
-      if (maitre.willAccept(reservation?.at, reservations ?? [], reservation)) {
+      if (this._maitreDeSalle.willAccept(reservation?.at, reservations ?? [], reservation)) {
         resolve(this._repository.create(reservation));
       }
       reject(new BadRequest("Maître De Salle does not accept reservation", "400"));
-    } catch (reason: any) {
-      if (reason instanceof TooManyReservationError) {
+    } catch (error_: any) {
+      if (error_ instanceof TooManyReservationError) {
         reject(new TooManyReservationError());
       }
-      reject(new BadRequest(reason.message, reason.name));
+      reject(new BadRequest(error_.message, error_.name));
     }
   }
 
-  get() : Reservation[] {
-    return [];
+  async get(params? : Map<string, object>) : Promise<Reservation[]> {
+    const realMin: Date = dayjs(0).toDate();
+    const realMax: Date = dayjs().add(1, 'month').toDate();
+    const min = params?.get('min') as unknown as string;
+    const max = params?.get('max') as unknown as string;
+    return await this._repository.read(min == null ? realMin : new Date(min), max == null ? realMax : new Date(max));
   }
 }

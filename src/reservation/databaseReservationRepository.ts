@@ -18,7 +18,7 @@ export class DatabaseReservationRepository implements ReservationRepository {
         });
     }
 
-    async read(at: Date, max: Date = new Date()): Promise<Reservation[] | null> {
+    async read(at: Date, max: Date = new Date()): Promise<Reservation[]> {
         const copy = new Date();
         copy.setUTCFullYear(at.getUTCFullYear(), at.getUTCMonth(), at.getDate());
         if (at.getTime() > max.getTime()) {

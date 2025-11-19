@@ -1,12 +1,13 @@
 import {Link, ResponseBody} from "./reservation/responsebody";
+require('node:events').EventEmitter.defaultMaxListeners = 15;
 
 const express = require('express')
 const bodyParser = require('body-parser')
 const {createReservationRoute} = require("./routes");
 import * as dotenv from 'dotenv'
-import {DatabaseReservationRepository} from "./reservation/databaseReservationRepository";
 
-import os from "os";
+import os from "node:os";
+import {getReservationsRoute} from "./routes";
 
 dotenv.config() // Load the environment variables
 console.log(`The connection URL is ${process.env.DATABASE_URL}`)
@@ -32,8 +33,8 @@ app.get('/', (_req: any, res: any) => {
   ]));
 })
 
-app.post('/reservations', createReservationRoute(new DatabaseReservationRepository()))
-app.post('/reservations', createReservationRoute(new DatabaseReservationRepository()))
+app.post('/reservations', createReservationRoute())
+app.get('/reservations', getReservationsRoute());
 
 app.server = app.listen(port, () => {
   console.log(`Server is running on ${host}`)

@@ -6,6 +6,8 @@ import {TimeOfDay} from "./timeOfDay";
 import {Seating} from "./seating";
 import {TooManyReservationError} from "./errorHandling";
 
+// The Maitre de Salle is responsible for managing the reservations and ensuring that the restaurant can accommodate them.
+// * ideas: emailReservation, PostSMTPOffice,
 export default class MaitreDeSalle {
     private readonly opens: TimeOfDay;
     private readonly lastSeating: TimeOfDay;
@@ -53,7 +55,7 @@ export default class MaitreDeSalle {
     private allocate(relevantReservations: Reservation[], tables: Table[]): Table[] {
         // find for the relevant reservations the correct tables;
         for (const relevantReservation of relevantReservations) {
-            const table = tables.filter(table => table.numberOfSeats >= relevantReservation.quantity).shift();
+            const table = tables.find(table => table.numberOfSeats >= relevantReservation.quantity);
             if (table) {
                 tables.splice(tables.indexOf(table), 1);
             } else {
