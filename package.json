@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
-    "body-parser": "^2.2.0",
+    "body-parser": "^2.2.1",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
