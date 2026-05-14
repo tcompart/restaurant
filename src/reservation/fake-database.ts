@@ -1,6 +1,6 @@
 import {Identifiable, ReservationImpl} from "./reservation.impl";
 import {Reservation} from "./reservation";
-const { v4: uuid } = require("uuid");
+import { v4 as uuid } from 'uuid';
 import {ReservationRepository} from "./reservationRepository";
 
 export class FakeDatabase extends Array<ReservationImpl> implements ReservationRepository {
