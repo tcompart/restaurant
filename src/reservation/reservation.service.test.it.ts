@@ -1,8 +1,12 @@
 import {ReservationImpl} from "./reservation.impl";
-import {validate} from "uuid";
 import {PrismaClientKnownRequestError, PrismaClientValidationError} from "prisma/prisma-client/runtime/library";
 import {DatabaseReservationRepository} from "./databaseReservationRepository";
 import {ReservationDTO} from "./reservation.dto";
+
+// simple regexp expression to test if a string is a valid UUID
+const validate = (uuid: string): boolean => {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
+};
 
 describe('reservation', () => {
 
