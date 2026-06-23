@@ -1,12 +1,11 @@
 import {Identifiable, ReservationImpl} from "./reservation.impl";
 import {Reservation} from "./reservation";
-import {v4 as uuid} from "uuid";
 import {ReservationRepository} from "./reservationRepository";
 
 export class FakeDatabase extends Array<ReservationImpl> implements ReservationRepository {
   create(reservation: Reservation): Promise<Identifiable> {
     const reservationImpl = new ReservationImpl(String(reservation.at), reservation.email, reservation.name, reservation.quantity);
-    reservationImpl.id = uuid();
+    reservationImpl.id = crypto.randomUUID();
     this.push(reservationImpl);
     return Promise.resolve(reservationImpl);
   }
