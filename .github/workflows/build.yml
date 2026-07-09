@@ -47,7 +47,7 @@ jobs:
         run: docker compose -f docker-compose.yml down
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@45f27363d4ff7d6b16baa0516490f10c52bdd5fc
+        uses: SonarSource/sonarqube-scan-action@7cdc154593ec10cd3c019fceab40f415f9218437
         if: ${{ github.actor != 'dependabot[bot]' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
