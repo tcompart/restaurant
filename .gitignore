@@ -1,4 +1,5 @@
 .env
+config/env.PROD
 node_modules
 coverage
 dist
