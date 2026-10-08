@@ -16,7 +16,7 @@ describe('reservation', () => {
 
         const reservationDTO = new ReservationDTO("2023-11-24 19:00", "juliad@example.net", "Julia Domna", 5);
         await reservationController.post(reservationDTO);
-        expect(fakeDatabase.at(0)).toMatchObject({
+        expect(fakeDatabase[0]).toMatchObject({
             at: new Date("2023-11-24 19:00"),
             email: "juliad@example.net",
             name: "Julia Domna",
@@ -44,6 +44,15 @@ describe('reservation', () => {
 
         await reservationController.post(new ReservationDTO("2023-11-12 10:00", "juliad@example.net", "Julia Domna", 4));
         await reservationController.post(new ReservationDTO("2023-11-12 19:00", "juliad@example.net", "Julia Domna", 5));
+
+        const reservations = await reservationController.get();
+        expect(reservations).toHaveLength(2);
+        expect(reservations[0]).toMatchObject({
+            at: new Date("2023-11-12 10:00"), quantity: 4
+        });
+        expect(reservations[1]).toMatchObject({
+            at: new Date("2023-11-12 19:00"), quantity: 5
+        });
     });
 
     it(' is should allow two reservations with around  10 guest on two different days', async () => {
@@ -87,13 +96,8 @@ describe('reservation', () => {
             '',
             '2023-02-31 10:00',
         ])(' validates date as well %p', (invalidDate) => {
-            try {
-                new ReservationImpl(invalidDate, someEmail, someName, 2)
-                expect("failure").toBe(true)
-            } catch (e: any) {
-                const message = e ? e.message : "empty";
-                expect(message).toBe(invalidDate + " is not a valid date");
-            }
+            expect(() => new ReservationImpl(invalidDate, someEmail, someName, 2))
+                .toThrow(new Error(`${invalidDate} is not a valid date`));
         });
         it.each([0, -1, -100, 'x'])
         (' validates number %p of guests to be not valid', (input) => {

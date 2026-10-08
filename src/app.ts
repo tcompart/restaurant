@@ -10,8 +10,6 @@ import os from "node:os";
 import {getReservationsRoute} from "./routes";
 
 dotenv.config() // Load the environment variables
-console.log(`The connection URL is ${process.env.DATABASE_URL}`)
-
 
 const app = express()
 app.disable("x-powered-by");
