@@ -38,6 +38,22 @@ describe('Maître de Salle', () => {
         expect(maitreDeSalle.willAccept(date, [], candidate)).toBe(false);
     });
 
+    test.each([
+        [new Date(2027, 0, 1, 0, 1), false],
+        [new Date(2027, 0, 1, 7, 59), false],
+        [new Date(2027, 0, 1, 8, 0), true],
+        [new Date(2027, 0, 2, 8, 0), true],
+    ])('evaluates opening hours on the requested calendar day: %s', (date, expected) => {
+        const maitreDeSalle = new MaitreDeSalle(
+            new TimeOfDay(8),
+            new TimeOfDay(20, 30),
+            dayjs.duration({minutes: 100}),
+            [new Table(8)]
+        );
+
+        expect(maitreDeSalle.willAccept(date, [], candidate)).toBe(expected);
+    });
+
     test('does not accept if no tables available', () => {
         const date = new Date();
         date.setHours(12, 30);
