@@ -89,6 +89,25 @@ describe('reservation', () => {
             });
     });
 
+    it('rejects a reservation when no tables are available', async () => {
+        const controller = new ReservationController(new FakeDatabase(), []);
+        await expect(controller.post(new ReservationDTO('2023-03-11 19:00', someEmail, someName, 5)))
+            .rejects.toMatchObject({
+                message: "Maître De Salle does not accept reservation",
+                name: "400"
+            });
+    });
+
+    it('preserves repository errors instead of reporting them as bad requests', async () => {
+        const database = new FakeDatabase();
+        const failure = new Error("Database unavailable");
+        jest.spyOn(database, "read").mockRejectedValue(failure);
+        const controller = new ReservationController(database, [new Table(8)]);
+
+        await expect(controller.post(new ReservationDTO('2023-03-11 19:00', someEmail, someName, 5)))
+            .rejects.toBe(failure);
+    });
+
     describe('impl', () => {
         it.each([
             '99-2343-2343:32894;:343',

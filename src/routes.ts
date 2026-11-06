@@ -22,7 +22,7 @@ export function createReservationRoute() {
                 "msg": "Reservation accepted."
             }))
         };
-        getReservationController().post(req.body)
+        return getReservationController().post(req.body)
             .then(onfulfilled)
             .catch(new ErrorHandling(res).onRejected)
     };
