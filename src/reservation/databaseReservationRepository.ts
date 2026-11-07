@@ -19,13 +19,13 @@ export class DatabaseReservationRepository implements ReservationRepository {
     }
 
     async read(at: Date, max: Date = new Date()): Promise<Reservation[]> {
-        const copy = new Date();
-        copy.setUTCFullYear(at.getUTCFullYear(), at.getUTCMonth(), at.getDate());
         if (at.getTime() > max.getTime()) {
             throw new UnexpectedError("Unable to read reservations.", new Error("Date is in the future."));
         }
-        const start = new Date(copy.setHours(0, 0, 0, 0));
-        const end = new Date(copy.setHours(23, 59, 59, 59));
+        const start = new Date(at);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(at);
+        end.setHours(23, 59, 59, 999);
         return prisma.reservation.findMany({
             where: {
                 at: {
@@ -36,39 +36,24 @@ export class DatabaseReservationRepository implements ReservationRepository {
         })
     }
 
-    deleteAll(): Promise<number | null> {
-        return new Promise<number | null>((resolve, rejects) => {
-            (async () => {
-                try {
-                    const result = await prisma.reservation.deleteMany();
-                    if (result) {
-                        resolve(result.count);
-                    }
-                } catch (e) {
-                    const error = new UnexpectedError("Record to delete does not exist.", e as Error);
-                    rejects(error);
-                }
-            })();
-        });
+    async deleteAll(): Promise<number | null> {
+        try {
+            const result = await prisma.reservation.deleteMany();
+            return result.count;
+        } catch (e) {
+            throw new UnexpectedError("Record to delete does not exist.", e as Error);
+        }
     }
 
-    delete(id: string): Promise<Identifiable | null> {
-        return new Promise<Identifiable | null>((resolve, rejects) => {
-            (async () => {
-                try {
-                    const result = await prisma.reservation.delete({
-                        where: {
-                            id: id
-                        }
-                    });
-                    if (result) {
-                        resolve(result);
-                    }
-                } catch (e) {
-                    const error = new UnexpectedError("Record to delete does not exist.", e as Error);
-                    rejects(error);
+    async delete(id: string): Promise<Identifiable | null> {
+        try {
+            return await prisma.reservation.delete({
+                where: {
+                    id: id
                 }
-            })();
-        });
+            });
+        } catch (e) {
+            throw new UnexpectedError("Record to delete does not exist.", e as Error);
+        }
     }
 }

@@ -9,15 +9,13 @@ export class TimeOfDay {
     }
 
     atDate(day: Date): this {
-        this.today = new Date();
-        this.today.setUTCFullYear(day.getUTCFullYear(), day.getUTCMonth(), day.getDate());
+        this.today = new Date(day);
         return this;
     }
 
     toDate(): Date {
-        const date = this.today;
-        date.setHours(this._hour)
-        date.setMinutes(this._minutes);
+        const date = new Date(this.today);
+        date.setHours(this._hour, this._minutes, 0, 0);
         return date;
     }
 }

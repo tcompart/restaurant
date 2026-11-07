@@ -16,9 +16,12 @@ describe('routes', () => {
   });
 
   test('accepts a valid reservation', async () => {
+    const reservationAt = new Date();
+    reservationAt.setDate(reservationAt.getDate() + 1);
+    reservationAt.setHours(12, 0, 0, 0);
     const req = {
       body: {
-        at: new Date().toISOString(),
+        at: reservationAt.toISOString(),
         email: 'my@mail.com',
         name: 'Test Guest',
         quantity: 2
