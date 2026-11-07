@@ -32,6 +32,6 @@ describe('errorHandling', () => {
     const error = new ErrorHandling(mockedResponse);
     error.onRejected(new Error("I am a general failure"));
     expect(status).toBe(500);
-    expect(sendResponse).toBe(DEFAULT_RESPONSE);
+    expect(sendResponse).toBe("Internal server error.");
   });
 });

@@ -12,8 +12,8 @@ describe('reservation', () => {
 
     describe('repository', () => {
 
-        beforeEach(() => {
-            new DatabaseReservationRepository().deleteAll();
+        beforeEach(async () => {
+            await new DatabaseReservationRepository().deleteAll();
         })
 
         test('create something unusable', async () => {

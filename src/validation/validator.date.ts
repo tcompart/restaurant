@@ -1,10 +1,11 @@
 import dayjs from "dayjs";
 
+function findDateByPattern(myString: string) {
+    const yyyyMMdd = /\d{4}-\d{2}-\d{2}/;
+    return yyyyMMdd.test(myString);
+}
+
 export function isValidDate(date: Date|string) {
-    function findDateByPattern(myString: string) {
-        const yyyyMMdd = /\d{4}-\d{2}-\d{2}/;
-        return yyyyMMdd.test(myString);
-    }
     let extractedDate;
     if (date instanceof Date) {
         extractedDate = new Date(date).toISOString();

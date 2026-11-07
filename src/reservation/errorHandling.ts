@@ -61,6 +61,7 @@ export class ErrorHandling {
             this._resp.send('Too many reservations. Conflict.');
         } else {
             this._resp.status(500);
+            this._resp.send('Internal server error.');
         }
     };
 }

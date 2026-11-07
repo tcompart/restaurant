@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import Table from "./table";
 import {TimeOfDay} from "./timeOfDay";
 import {ReservationRepository} from "./reservationRepository";
-import {BadRequest, TooManyReservationError} from "./errorHandling";
+import {BadRequest} from "./errorHandling";
 import {Reservation} from "./reservation";
 
 const duration = require('dayjs/plugin/duration')
@@ -26,40 +26,25 @@ export class ReservationController {
     );
   }
 
-  post(reservationDTO: ReservationDTO): Promise<Identifiable> {
-    return new Promise<Identifiable>((resolve, reject) => {
-      (async () => {
-        let reservation = this.validateReservation(reservationDTO, reject);
-        if (reservation?.at) {
-          await this.applyReservation(reservation, resolve, reject);
-        }
-      })();
-    });
+  async post(reservationDTO: ReservationDTO): Promise<Identifiable> {
+    const reservation = this.validateReservation(reservationDTO);
+    return this.applyReservation(reservation);
   }
 
-  private validateReservation(reservationDTO: ReservationDTO, reject: (reason?: any) => void) {
-    let reservation = null;
+  private validateReservation(reservationDTO: ReservationDTO): ReservationImpl {
     try {
-      reservation = new ReservationImpl(reservationDTO.at, reservationDTO.email, reservationDTO.name, reservationDTO.quantity);
+      return new ReservationImpl(reservationDTO.at, reservationDTO.email, reservationDTO.name, reservationDTO.quantity);
     } catch (error: any) {
-      reject(new BadRequest(error.message, "400"));
+      throw new BadRequest(error.message, "400");
     }
-    return reservation;
   }
 
-  private async applyReservation(reservation: ReservationImpl, resolve: (value: (PromiseLike<Identifiable> | Identifiable)) => void, reject: (reason?: any) => void) {
-    try {
-      const reservations = await this._repository.read(reservation?.at);
-      if (this._maitreDeSalle.willAccept(reservation?.at, reservations ?? [], reservation)) {
-        resolve(this._repository.create(reservation));
-      }
-      reject(new BadRequest("Maître De Salle does not accept reservation", "400"));
-    } catch (error_: any) {
-      if (error_ instanceof TooManyReservationError) {
-        reject(new TooManyReservationError());
-      }
-      reject(new BadRequest(error_.message, error_.name));
+  private async applyReservation(reservation: ReservationImpl): Promise<Identifiable> {
+    const reservations = await this._repository.read(reservation.at);
+    if (this._maitreDeSalle.willAccept(reservation.at, reservations, reservation)) {
+      return this._repository.create(reservation);
     }
+    throw new BadRequest("Maître De Salle does not accept reservation", "400");
   }
 
   async get(params? : Map<string, object>) : Promise<Reservation[]> {
