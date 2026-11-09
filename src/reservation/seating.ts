@@ -2,6 +2,10 @@ import {Reservation} from "./reservation";
 import {Duration} from "dayjs/plugin/duration";
 import dayjs from "dayjs";
 
+/**
+ * A seating represents a reservation for a certain number of people at a certain time.
+ * It is used to determine if a table can accommodate a reservation.
+ */
 export class Seating {
     private readonly _quantity!: number;
     private readonly _starts: Date;
