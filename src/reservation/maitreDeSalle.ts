@@ -39,7 +39,7 @@ export default class MaitreDeSalle {
         const relevantReservations = existingReservations
             .filter(reservation => seating.overlaps(reservation, this.seatingDuration));
         const tables = this.allocate(relevantReservations, this.tables);
-        return tables.filter(table => table.fits(seating)).length > 0;
+        return tables.some(table => table.fits(seating));
     }
 
     private isInvalidReservationRequest(now: Date): boolean {
