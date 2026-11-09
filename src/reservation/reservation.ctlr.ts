@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import Table from "./table";
 import {TimeOfDay} from "./timeOfDay";
 import {ReservationRepository} from "./reservationRepository";
-import {BadRequest} from "./errorHandling";
+import {BadRequest, TooManyReservationError} from "./errorHandling";
 import {Reservation} from "./reservation";
 
 const duration = require('dayjs/plugin/duration')
@@ -22,7 +22,6 @@ export class ReservationController {
       new TimeOfDay(20, 30),
       dayjs.duration({minutes: 100}),
       tables,
-      false
     );
   }
 
@@ -44,7 +43,7 @@ export class ReservationController {
     if (this._maitreDeSalle.willAccept(reservation.at, reservations, reservation)) {
       return this._repository.create(reservation);
     }
-    throw new BadRequest("Maître De Salle does not accept reservation", "400");
+    throw new TooManyReservationError();
   }
 
   async get(params? : Map<string, object>) : Promise<Reservation[]> {

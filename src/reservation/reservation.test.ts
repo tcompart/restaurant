@@ -57,7 +57,7 @@ describe('reservation', () => {
 
     it(' is should allow two reservations with around  10 guest on two different days', async () => {
         const fakeDatabase = new FakeDatabase();
-        const reservationController = new ReservationController(fakeDatabase, [new Table(8)]);
+        const reservationController = new ReservationController(fakeDatabase, [new Table(9)]);
 
         await reservationController.post(new ReservationDTO("2023-11-11 10:00", "juliad@example.net", "Julia Domna", 8));
         await reservationController.post(new ReservationDTO("2023-11-12 19:00", "juliad@example.net", "Julia Domna", 9));

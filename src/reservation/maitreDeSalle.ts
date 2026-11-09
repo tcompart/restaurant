@@ -4,7 +4,7 @@ import {Reservation} from "./reservation";
 import Table from "./table";
 import {TimeOfDay} from "./timeOfDay";
 import {Seating} from "./seating";
-import {TooManyReservationError} from "./errorHandling";
+import {BadRequest, TooManyReservationError} from "./errorHandling";
 
 // The Maitre de Salle is responsible for managing the reservations and ensuring that the restaurant can accommodate them.
 // * ideas: emailReservation, PostSMTPOffice,
@@ -13,17 +13,20 @@ export default class MaitreDeSalle {
     private readonly lastSeating: TimeOfDay;
     private readonly seatingDuration: Duration;
     private readonly tables: Table[];
-    private readonly debug!: boolean;
 
-    constructor(opens: TimeOfDay, lastSeating: TimeOfDay, seatingDuration: Duration, tables: Table[], debug = false) {
+    constructor(opens: TimeOfDay, lastSeating: TimeOfDay, seatingDuration: Duration, tables: Table[]) {
         this.opens = opens;
         this.lastSeating = lastSeating;
         this.seatingDuration = seatingDuration;
         this.tables = tables;
-        this.debug = debug;
     }
 
     willAccept(now: Date, existingReservations: Reservation[], reservation : Reservation) {
+        if (this.tables.length <= 0) {
+            throw new BadRequest("Maître De Salle does not accept reservation", "400");
+        }
+
+
         if (this.isInvalidReservationRequest(now)) {
             return false;
         }
@@ -36,14 +39,7 @@ export default class MaitreDeSalle {
         const relevantReservations = existingReservations
             .filter(reservation => seating.overlaps(reservation, this.seatingDuration));
         const tables = this.allocate(relevantReservations, this.tables);
-        if (this.debug) {
-            console.log("[DEBUG] reservation: '",reservation,"'; found relevant reservation: '", relevantReservations, "'");
-            console.log("[DEBUG] existing tables: '",this.tables,"'; found free tables: '", tables, "'");
-        }
-        if (tables.length == 0) {
-            throw new TooManyReservationError();
-        }
-        return tables.length > 0;
+        return tables.some(table => table.fits(seating));
     }
 
     private isInvalidReservationRequest(now: Date): boolean {
@@ -54,14 +50,17 @@ export default class MaitreDeSalle {
 
     private allocate(relevantReservations: Reservation[], tables: Table[]): Table[] {
         // find for the relevant reservations the correct tables;
+        const localTables = [...tables];
         for (const relevantReservation of relevantReservations) {
-            const table = tables.find(table => table.numberOfSeats >= relevantReservation.quantity);
+            const table = localTables.find(table => table.fits(new Seating(relevantReservation, this.seatingDuration)));
             if (table) {
-                tables.splice(tables.indexOf(table), 1);
+                const seating = new Seating(relevantReservation, this.seatingDuration);
+                const index = localTables.indexOf(table);
+                localTables[index] = table.reserve(seating);
             } else {
-                throw new Error("Inconsistent tables vs. reservations existing. #Reservations: " + relevantReservations.length + "; #Tables: " + tables.length)
+                throw new TooManyReservationError()
             }
         }
-        return tables;
+        return localTables;
     }
 }
