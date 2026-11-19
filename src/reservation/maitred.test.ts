@@ -114,7 +114,7 @@ describe('Maître de Salle', () => {
     });
 
     // currently not implemented, but should be possible in the future
-    test.skip('can accept reservations on community tables if space exists', () => {
+    test('can accept reservations on community tables if space exists', () => {
         const reservation1 = new ReservationDTO(twelveThirty.toISOString(), "me@email.com", 'Me', 4);
         const reservation2 = new ReservationDTO(one.toISOString(), "my@email.com", 'Myself', 2);
 
