@@ -10,6 +10,10 @@ Development process
 The Docker image does not contain production credentials. Supply `DATABASE_URL`
 and `PORT` through the deployment environment or a protected runtime env file.
 
+When `NODE_ENV` is not `PROD`, reservations use a shared in-memory repository:
+they are visible to subsequent requests in the same server process but are lost
+when the server restarts. Each server process has its own separate data.
+
 Reservation availability
 
 * `POST /reservations/availability` checks whether a party can be seated without

@@ -1,5 +1,7 @@
 import {Request, Response} from 'express';
 import {createAvailabilityRoute, createCalendarRoute, createReservationRoute} from "./routes";
+import {FakeDatabase} from "./reservation/fake-database";
+import * as services from "./reservation/service-injection";
 
 function createResponse(): Response {
   return {
@@ -14,6 +16,13 @@ function createQueryRequest(query: Request['query']): Request {
 }
 
 describe('routes', () => {
+  beforeEach(() => {
+    jest.spyOn(services, 'getReservationRepository').mockReturnValue(new FakeDatabase());
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   describe('createReservationRoute', () => {
     test('can be created', () => {

@@ -2,6 +2,8 @@ import request from "supertest";
 import axios from "axios";
 import app from "./app";
 import os from "os";
+import {FakeDatabase} from "./reservation/fake-database";
+import * as services from "./reservation/service-injection";
 
 describe('Restaurant', () => {
 
@@ -39,12 +41,11 @@ describe('Restaurant', () => {
   });
 
   test('application is an http app', async () => {
-    request(app)
+    await request(app)
         .get('/')
         .expect('Content-Type', /json/)
         .expect(200)
-        .end(function(err, res) {
-          if (err) throw err;
+        .then(res => {
           expect(res.body._links[0]._rel).toBe("urn:addReservation");
         });
   });
@@ -123,5 +124,36 @@ describe('Restaurant', () => {
       .query({from: [from.toISOString(), from.toISOString()], to: to.toISOString(), quantity: '4'})
       .expect(400)
       .expect('Bad request.');
+  });
+
+  test('a reservation is visible to subsequent availability and calendar requests', async () => {
+    const database = new FakeDatabase();
+    const repository = jest.spyOn(services, 'getReservationRepository').mockReturnValue(database);
+    try {
+      const at = new Date();
+      at.setDate(at.getDate() + 1);
+      at.setHours(12, 0, 0, 0);
+      const to = new Date(at);
+      to.setHours(14, 0, 0, 0);
+
+      await request(app)
+        .post('/reservations')
+        .send({at: at.toISOString(), email: 'guest@example.com', name: 'Test Guest', quantity: 10})
+        .expect(201);
+
+      await request(app)
+        .post('/reservations/availability')
+        .send({at: at.toISOString(), quantity: 1})
+        .expect(200)
+        .expect({available: false});
+
+      await request(app)
+        .get('/reservations/calendar')
+        .query({from: at.toISOString(), to: to.toISOString(), quantity: '1'})
+        .expect(200)
+        .expect({available: []});
+    } finally {
+      repository.mockRestore();
+    }
   });
 });

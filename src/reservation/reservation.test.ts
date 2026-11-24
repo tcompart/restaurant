@@ -2,7 +2,7 @@ import {ReservationDTO} from "./reservation.dto";
 import {ReservationImpl} from "./reservation.impl";
 import {ReservationController} from "./reservation.ctlr";
 import {FakeDatabase} from "./fake-database";
-import {Configuration} from "./configuration";
+import {Configuration, Default} from "./configuration";
 
 import Table from "./table";
 import {BadRequest} from "./errorHandling";
@@ -106,7 +106,8 @@ describe('reservation', () => {
 
     it(' is should allow two reservations with less than 10 guest', async () => {
         const fakeDatabase = new FakeDatabase();
-        const reservationController = new ReservationController(fakeDatabase, defaultConfiguration);
+        //FYI Default configuration just for coverage
+        const reservationController = new ReservationController(fakeDatabase, new Default());
 
         await reservationController.post(new ReservationDTO("2023-11-12 10:00", "juliad@example.net", "Julia Domna", 4));
         await reservationController.post(new ReservationDTO("2023-11-12 19:00", "juliad@example.net", "Julia Domna", 5));

@@ -2,6 +2,7 @@ import {getReservationRepository} from "./service-injection";
 import {ReservationImpl} from "./reservation.impl";
 import {Reservation} from "./reservation";
 import {FakeDatabase} from "./fake-database";
+import {DatabaseReservationRepository} from "./databaseReservationRepository";
 
 describe('service-injection', () => {
 
@@ -17,6 +18,28 @@ describe('service-injection', () => {
     expect(database).toBeInstanceOf(FakeDatabase);
   });
 
+  test('reuses the fake database between requests outside PROD', () => {
+    const previousEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'test';
+    try {
+      expect(getReservationRepository()).toBeInstanceOf(FakeDatabase);
+    } finally {
+      if (previousEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = previousEnv;
+    }
+  });
+
+  test('uses the database repository in PROD', () => {
+    const previousEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'PROD';
+    try {
+      expect(getReservationRepository()).toBeInstanceOf(DatabaseReservationRepository);
+    } finally {
+      if (previousEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = previousEnv;
+    }
+  });
+
   test('can create and store reservations', () => {
     const database = new FakeDatabase();
     database.create(reservation);
@@ -25,12 +48,11 @@ describe('service-injection', () => {
     expect(database[0].id).toBeDefined();
   })
 
-  test('can find created reservations', () => {
+  test('can find created reservations', async () => {
     const database = new FakeDatabase();
-    database.create(reservation);
+    await database.create(reservation);
     const reservations =  database.read(today);
-    expect(reservations).resolves.toHaveLength(1);
-    expect(reservations).resolves.toBeDefined();
+    await expect(reservations).resolves.toHaveLength(1);
     const stored = database.pop();
     expect(stored?.email).toBe('my@mail.com');
   });
@@ -39,7 +61,7 @@ describe('service-injection', () => {
     const database = new FakeDatabase();
     await database.create(reservation);
     const id = database[0].id;
-    // @ts-ignore
+    if (id == null) throw new Error('Expected reservation to have an id');
     const foundReservation = await database.delete(id);
     expect(foundReservation?.id).toBe(id);
     expect(database).toHaveLength(0);
