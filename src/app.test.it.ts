@@ -26,6 +26,14 @@ describe('Restaurant', () => {
         {
           "_href": `http://${host}:3000/reservations`,
           "_rel": "urn:reservations",
+        },
+        {
+          "_href": `http://${host}:3000/reservations/availability`,
+          "_rel": "urn:reservationAvailability",
+        },
+        {
+          "_href": `http://${host}:3000/reservations/calendar`,
+          "_rel": "urn:reservationCalendar",
         }
       ]});
   });
@@ -71,4 +79,49 @@ describe('Restaurant', () => {
       }
     });
   })
+
+  test('checks reservation availability through the HTTP API', async () => {
+    const at = new Date();
+    at.setDate(at.getDate() + 1);
+    at.setHours(12, 0, 0, 0);
+
+    await expect(axios.post('http://127.0.0.1:3000/reservations/availability', {
+      at: at.toISOString(),
+      quantity: 4
+    })).resolves.toMatchObject({
+      status: 200,
+      data: {available: true}
+    });
+  });
+
+  test('checks calendar availability using query parameters', async () => {
+    const from = new Date();
+    from.setDate(from.getDate() + 1);
+    from.setHours(12, 0, 0, 0);
+    const to = new Date(from);
+    to.setHours(14, 0, 0, 0);
+    const expectedSlots = [0, 30, 60, 90].map(minutes =>
+      new Date(from.getTime() + minutes * 60_000).toISOString()
+    );
+
+    await request(app)
+      .get('/reservations/calendar')
+      .query({from: from.toISOString(), to: to.toISOString(), quantity: '4'})
+      .expect(200)
+      .expect({available: expectedSlots});
+  });
+
+  test('rejects repeated calendar query parameters', async () => {
+    const from = new Date();
+    from.setDate(from.getDate() + 1);
+    from.setHours(12, 0, 0, 0);
+    const to = new Date(from);
+    to.setHours(14, 0, 0, 0);
+
+    await request(app)
+      .get('/reservations/calendar')
+      .query({from: [from.toISOString(), from.toISOString()], to: to.toISOString(), quantity: '4'})
+      .expect(400)
+      .expect('Bad request.');
+  });
 });
