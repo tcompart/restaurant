@@ -12,14 +12,21 @@ import {Seating} from "./seating";
 export default class Table {
     private readonly _numberOfSeats: number;
     private readonly _communityTable: boolean;
+    private readonly _minCapacity: number;
+    private readonly _name: string;
+    private readonly _shape: string;
 
-    constructor(numberOfSeats: number, communityTable: boolean = false) {
+    constructor(numberOfSeats: number, communityTable: boolean = false,
+                options: {minCapacity?: number; name?: string; shape?: string} = {}) {
         this._numberOfSeats = numberOfSeats;
         this._communityTable = communityTable;
+        this._minCapacity = options.minCapacity ?? 1;
+        this._name = options.name ?? "Standard";
+        this._shape = options.shape ?? "unspecified";
     }
 
     fits(seating: Seating): boolean {
-        return this._numberOfSeats >= seating.quantity;
+        return this._minCapacity <= seating.quantity && this._numberOfSeats >= seating.quantity;
     }
 
     get isCommunityTable(): boolean {
@@ -30,13 +37,26 @@ export default class Table {
         return this._numberOfSeats;
     }
 
+    get minCapacity(): number {
+        return this._minCapacity;
+    }
+
+    get name(): string {
+        return this._name;
+    }
+
+    get shape(): string {
+        return this._shape;
+    }
+
     reserve(seating: Seating): Table {
         if (!this.fits(seating)) {
             throw new Error("Table cannot fit the seating.");
         }
         if (!this._communityTable) {
-            return new Table(0, false);
+            return new Table(0, false, {minCapacity: this._minCapacity, name: this._name, shape: this._shape});
         }
-        return new Table(this._numberOfSeats - seating.quantity, this._communityTable);
+        return new Table(this._numberOfSeats - seating.quantity, this._communityTable,
+            {minCapacity: this._minCapacity, name: this._name, shape: this._shape});
     }
 }

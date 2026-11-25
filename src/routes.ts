@@ -3,17 +3,12 @@ import {getReservationRepository} from "./reservation/service-injection";
 import {BadRequest, ErrorHandling} from "./reservation/errorHandling";
 import {ReservationController} from "./reservation/reservation.ctlr";
 
-import Table from "./reservation/table";
-import {Configuration} from "./reservation/configuration";
-import {TimeOfDay} from "./reservation/timeOfDay";
-import dayjs from "dayjs";
+import {Default} from "./reservation/configuration";
 
-export function findAvailableTables(tables: Table[] = []): Configuration {
-    return {tables, opens: new TimeOfDay(8), lastSeating: new TimeOfDay(20, 30), seatingDuration: dayjs.duration({minutes: 100})};
-}
+const configuration = new Default();
 
 export function getReservationController(repo = getReservationRepository()) {
-    return new ReservationController(repo, findAvailableTables([new Table(10)]));
+    return new ReservationController(repo, configuration);
 }
 
 export function createReservationRoute() {

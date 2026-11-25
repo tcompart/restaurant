@@ -20,6 +20,20 @@ describe("table", () => {
         expect(() => table.reserve(defaultSeating)).toThrow("Table cannot fit the seating.");
     })
 
+    test("enforces minimum capacity and preserves table properties when reserved", () => {
+        const table = new Table(8, true, {minCapacity: 3, name: "Rund", shape: "round"});
+        const small = new Seating({at: new Date(), quantity: 2}, dayjs.duration({minutes: 90}));
+        const valid = new Seating({at: new Date(), quantity: 3}, dayjs.duration({minutes: 90}));
+
+        expect(table.fits(small)).toBe(false);
+        const remaining = table.reserve(valid);
+        expect(remaining.numberOfSeats).toBe(5);
+        expect(remaining.minCapacity).toBe(3);
+        expect(remaining.name).toBe("Rund");
+        expect(remaining.shape).toBe("round");
+        expect(remaining.fits(small)).toBe(false);
+    });
+
     describe('with community seating', () => {
         test('5 people can sit at it', () => {
             expect(new Table(5, true).fits(defaultSeating)).toBe(true);

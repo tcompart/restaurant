@@ -1,0 +1,12 @@
+{
+  "tableTypes": [
+    {
+      "name": "Standard",
+      "shape": "unspecified",
+      "minCapacity": 1,
+      "maxCapacity": 10,
+      "quantity": 1,
+      "communityTable": false
+    }
+  ]
+}
