@@ -2,11 +2,11 @@ import {ReservationDTO} from "./reservation.dto";
 import {Identifiable, ReservationImpl} from "./reservation.impl";
 import MaitreDeSalle from "./maitreDeSalle";
 import dayjs from "dayjs";
-import Table from "./table";
-import {TimeOfDay} from "./timeOfDay";
 import {ReservationRepository} from "./reservationRepository";
 import {BadRequest, TooManyReservationError} from "./errorHandling";
 import {Reservation} from "./reservation";
+import {isValidDate} from "../validation/validator.date";
+import {Configuration, Default} from "./configuration";
 
 const duration = require('dayjs/plugin/duration')
 dayjs.extend(duration)
@@ -14,20 +14,56 @@ dayjs.extend(duration)
 export class ReservationController {
   private readonly _repository: ReservationRepository;
   private readonly _maitreDeSalle: MaitreDeSalle;
+  private readonly _configuration: Configuration;
 
-  constructor(db: ReservationRepository, tables: Table[]) {
+  constructor(db: ReservationRepository, configuration: Configuration = new Default()) {
     this._repository = db;
+    this._configuration = configuration;
     this._maitreDeSalle = new MaitreDeSalle(
-      new TimeOfDay(8),
-      new TimeOfDay(20, 30),
-      dayjs.duration({minutes: 100}),
-      tables,
+        this._configuration.opens,
+        this._configuration.lastSeating,
+        this._configuration.seatingDuration,
+        this._configuration.tables,
     );
   }
 
   async post(reservationDTO: ReservationDTO): Promise<Identifiable> {
     const reservation = this.validateReservation(reservationDTO);
     return this.applyReservation(reservation);
+  }
+
+  async checkAvailability(at: string, quantity: number): Promise<boolean> {
+    if (typeof at !== "string" || !isValidDate(at)) {
+      throw new BadRequest("at must be a valid date", "400");
+    }
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      throw new BadRequest("quantity must be a positive integer", "400");
+    }
+
+    const date = new Date(at);
+    const reservations = await this._repository.read(date);
+    return this._maitreDeSalle.isAvailable(date, reservations, quantity);
+  }
+
+  async checkAvailabilityFromTo(from: string, to: string, quantity: number): Promise<Date[]> {
+    if (!isValidDate(from) || !isValidDate(to)) {
+      throw new BadRequest("from and to must be valid dates", "400");
+    }
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      throw new BadRequest("quantity must be a positive integer", "400");
+    }
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    if (fromDate.getTime() > toDate.getTime()) {
+      throw new BadRequest("from must be before to", "400");
+    }
+    // Adjust the range by the seating duration to account for overlapping reservations
+    const durationMs = this._configuration.seatingDuration.asMilliseconds();
+    const reservations = await this._repository.read(
+        new Date(fromDate.getTime() - durationMs),
+        new Date(toDate.getTime() + durationMs)
+    );
+    return this._maitreDeSalle.getAvailableDates(fromDate, toDate, reservations, quantity);
   }
 
   private validateReservation(reservationDTO: ReservationDTO): ReservationImpl {

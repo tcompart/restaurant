@@ -1,6 +1,7 @@
 import {Identifiable, ReservationImpl} from "./reservation.impl";
 import {Reservation} from "./reservation";
 import {ReservationRepository} from "./reservationRepository";
+import {BadRequest} from "./errorHandling";
 
 export class FakeDatabase extends Array<ReservationImpl> implements ReservationRepository {
   create(reservation: Reservation): Promise<Identifiable> {
@@ -11,7 +12,10 @@ export class FakeDatabase extends Array<ReservationImpl> implements ReservationR
   }
 
   async read(at: Date, max?: Date): Promise<Reservation[]> {
-    if (max && at && at.getTime() < max.getTime()) {
+    if (max) {
+      if (at.getTime() > max.getTime()) {
+        throw new BadRequest("Start date is after end date.", "400");
+      }
       return this.filter(r => r.at >= at && r.at <= max);
     }
     return this.filter(r => new Date(r.at).toDateString() === at.toDateString());

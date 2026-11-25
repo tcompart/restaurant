@@ -22,20 +22,47 @@ export default class MaitreDeSalle {
     }
 
     willAccept(now: Date, existingReservations: Reservation[], reservation : Reservation) {
+        return this.canAccommodate(now, reservation.at, existingReservations, reservation.quantity);
+    }
+
+    isAvailable(at: Date, existingReservations: Reservation[], quantity: number): boolean {
+        return this.canAccommodate(at, at, existingReservations, quantity);
+    }
+
+    getAvailableDates(from: Date, to: Date, existingReservations: Reservation[], quantity: number): Date[] {
+        const slots: Date[] = [];
+
+        const slot = new Date(from);
+        slot.setHours(from.getHours(), from.getMinutes(), 0, 0);
+        slot.setMinutes(Math.floor(slot.getMinutes() / 30) * 30, 0, 0);
+
+        if (slot.getTime() < from.getTime()) {
+            slot.setMinutes(slot.getMinutes() + 30);
+        }
+
+        while (slot.getTime() < to.getTime()) {
+            if (this.isAvailable(slot, existingReservations, quantity)) {
+                slots.push(new Date(slot));
+            }
+            slot.setMinutes(slot.getMinutes() + 30);
+        }
+
+        return slots;
+    }
+
+    private canAccommodate(checkAt: Date, seatingAt: Date | string, existingReservations: Reservation[], quantity: number): boolean {
         if (this.tables.length <= 0) {
             throw new BadRequest("Maître De Salle does not accept reservation", "400");
         }
 
-
-        if (this.isInvalidReservationRequest(now)) {
+        if (this.isInvalidReservationRequest(checkAt)) {
             return false;
         }
 
+        const seating = new Seating({at: seatingAt, quantity}, this.seatingDuration);
         if (existingReservations.length == 0) {
-            return true;
+            return this.tables.some(table => table.fits(seating));
         }
-
-        const seating = new Seating(reservation, this.seatingDuration);
         const relevantReservations = existingReservations
             .filter(reservation => seating.overlaps(reservation, this.seatingDuration));
         const tables = this.allocate(relevantReservations, this.tables);

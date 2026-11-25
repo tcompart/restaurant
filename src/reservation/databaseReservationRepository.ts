@@ -2,7 +2,7 @@ import {PrismaClient} from '.prisma/client'
 import {ReservationRepository} from "./reservationRepository";
 import {Identifiable} from "./reservation.impl";
 import {Reservation} from "./reservation";
-import {UnexpectedError} from "./errorHandling";
+import {BadRequest, UnexpectedError} from "./errorHandling";
 
 const prisma = new PrismaClient()
 
@@ -18,14 +18,16 @@ export class DatabaseReservationRepository implements ReservationRepository {
         });
     }
 
-    async read(at: Date, max: Date = new Date()): Promise<Reservation[]> {
-        if (at.getTime() > max.getTime()) {
-            throw new UnexpectedError("Unable to read reservations.", new Error("Date is in the future."));
+    async read(at: Date, max?: Date): Promise<Reservation[]> {
+        if (max && at.getTime() > max.getTime()) {
+            throw new BadRequest("Start date is after end date.", "400");
         }
         const start = new Date(at);
-        start.setHours(0, 0, 0, 0);
-        const end = new Date(at);
-        end.setHours(23, 59, 59, 999);
+        const end = new Date(max ?? at);
+        if (max === undefined) {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+        }
         return prisma.reservation.findMany({
             where: {
                 at: {

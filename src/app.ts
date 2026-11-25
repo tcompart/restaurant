@@ -3,11 +3,11 @@ require('node:events').EventEmitter.defaultMaxListeners = 15;
 
 const express = require('express')
 const bodyParser = require('body-parser')
-const {createReservationRoute} = require("./routes");
+const {createReservationRoute, createAvailabilityRoute} = require("./routes");
 import * as dotenv from 'dotenv'
 
 import os from "node:os";
-import {getReservationsRoute} from "./routes";
+import {createCalendarRoute, getReservationsRoute} from "./routes";
 
 dotenv.config() // Load the environment variables
 
@@ -27,11 +27,15 @@ app.get('/', (_req: any, res: any) => {
   res.setHeader('Content-Type', 'application/json;charset=utf-8');
   res.send(new ResponseBody([
       new Link("urn:addReservation", new URL(host + "/reservation")),
-      new Link("urn:reservations", new URL(host + "/reservations"))
+      new Link("urn:reservations", new URL(host + "/reservations")),
+      new Link("urn:reservationAvailability", new URL(host + "/reservations/availability")),
+      new Link("urn:reservationCalendar", new URL(host + "/reservations/calendar"))
   ]));
 })
 
-app.post('/reservations', createReservationRoute())
+app.post('/reservations', createReservationRoute());
+app.post('/reservations/availability', createAvailabilityRoute());
+app.get('/reservations/calendar', createCalendarRoute());
 app.get('/reservations', getReservationsRoute());
 
 app.server = app.listen(port, () => {

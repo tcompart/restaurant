@@ -11,7 +11,7 @@ export class Seating {
     private readonly _starts: Date;
     private readonly _ends: Date;
 
-    constructor(reservation: Reservation, seatingDuration: Duration) {
+    constructor(reservation: Pick<Reservation, "at" | "quantity">, seatingDuration: Duration) {
         this._starts = new Date((reservation.at as Date));
         this._ends = dayjs(reservation.at).add(seatingDuration).toDate();
         this._quantity = reservation.quantity;
