@@ -74,6 +74,64 @@ describe('reservation', () => {
 
             await expect(controller.checkAvailability(tomorrowAt(12).toISOString(), 4)).rejects.toBe(failure);
         });
+
+        it('blocks calendar slots for reservations before the range and on later days', async () => {
+            const database = new FakeDatabase();
+            const controller = new ReservationController(database, defaultConfiguration);
+            const first = new Date(2025, 2, 30, 11, 30);
+            const second = new Date(2025, 2, 31, 12, 0);
+            await database.create(new ReservationImpl(first, someEmail, someName, 8));
+            await database.create(new ReservationImpl(second, someEmail, someName, 8));
+
+            const from = new Date(2025, 2, 30, 12, 0);
+            const to = new Date(2025, 2, 31, 14, 30);
+            const slots = await controller.checkAvailabilityFromTo(from.toISOString(), to.toISOString(), 4);
+
+            expect(slots).not.toContainEqual(from);
+            expect(slots).toContainEqual(new Date(2025, 2, 30, 13, 30));
+            expect(slots).not.toContainEqual(second);
+            expect(slots).toContainEqual(new Date(2025, 2, 31, 14, 0));
+            expect(slots).not.toContainEqual(to);
+        });
+
+        it('blocks a slot when a reservation starts after the requested range', async () => {
+            const database = new FakeDatabase();
+            const controller = new ReservationController(database, defaultConfiguration);
+            const from = new Date(2025, 2, 31, 12, 0);
+            const to = new Date(2025, 2, 31, 12, 30);
+            await database.create(new ReservationImpl(to, someEmail, someName, 8));
+
+            await expect(controller.checkAvailabilityFromTo(from.toISOString(), to.toISOString(), 4))
+                .resolves.toEqual([]);
+        });
+
+        it('expands the repository query by the configured seating duration', async () => {
+            const database = new FakeDatabase();
+            const read = jest.spyOn(database, 'read');
+            const configuration = {...defaultConfiguration, seatingDuration: dayjs.duration({minutes: 45})};
+            const controller = new ReservationController(database, configuration);
+            const from = new Date(2025, 2, 31, 12, 0);
+            const to = new Date(2025, 2, 31, 13, 0);
+
+            await controller.checkAvailabilityFromTo(from.toISOString(), to.toISOString(), 4);
+
+            expect(read).toHaveBeenCalledWith(
+                new Date(from.getTime() - 45 * 60_000),
+                new Date(to.getTime() + 45 * 60_000)
+            );
+        });
+
+        it('rejects a reversed calendar range before querying the repository', async () => {
+            const database = new FakeDatabase();
+            const read = jest.spyOn(database, 'read');
+            const controller = new ReservationController(database, defaultConfiguration);
+            const from = new Date(2025, 2, 31, 12, 0);
+            const to = new Date(2025, 2, 30, 12, 0);
+
+            await expect(controller.checkAvailabilityFromTo(from.toISOString(), to.toISOString(), 4))
+                .rejects.toBeInstanceOf(BadRequest);
+            expect(read).not.toHaveBeenCalled();
+        });
     });
 
     test(' can be written to database', async () => {

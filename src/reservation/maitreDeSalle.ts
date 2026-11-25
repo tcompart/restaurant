@@ -32,10 +32,7 @@ export default class MaitreDeSalle {
     getAvailableDates(from: Date, to: Date, existingReservations: Reservation[], quantity: number): Date[] {
         const slots: Date[] = [];
 
-        const slot = new Date();
-        slot.setDate(from.getDate());
-        slot.setMonth(from.getMonth());
-        slot.setFullYear(from.getFullYear());
+        const slot = new Date(from);
         slot.setHours(from.getHours(), from.getMinutes(), 0, 0);
         slot.setMinutes(Math.floor(slot.getMinutes() / 30) * 30, 0, 0);
 

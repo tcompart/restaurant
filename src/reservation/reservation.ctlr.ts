@@ -57,7 +57,12 @@ export class ReservationController {
     if (fromDate.getTime() > toDate.getTime()) {
       throw new BadRequest("from must be before to", "400");
     }
-    const reservations = await this._repository.read(fromDate, toDate);
+    // Adjust the range by the seating duration to account for overlapping reservations
+    const durationMs = this._configuration.seatingDuration.asMilliseconds();
+    const reservations = await this._repository.read(
+        new Date(fromDate.getTime() - durationMs),
+        new Date(toDate.getTime() + durationMs)
+    );
     return this._maitreDeSalle.getAvailableDates(fromDate, toDate, reservations, quantity);
   }
 

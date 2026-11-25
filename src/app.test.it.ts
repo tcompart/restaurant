@@ -156,4 +156,31 @@ describe('Restaurant', () => {
       repository.mockRestore();
     }
   });
+
+  test('calendar excludes slots overlapping a reservation before from', async () => {
+    const database = new FakeDatabase();
+    const repository = jest.spyOn(services, 'getReservationRepository').mockReturnValue(database);
+    try {
+      const reservationAt = new Date();
+      reservationAt.setDate(reservationAt.getDate() + 1);
+      reservationAt.setHours(11, 30, 0, 0);
+      const from = new Date(reservationAt);
+      from.setHours(12, 0, 0, 0);
+      const to = new Date(from);
+      to.setHours(14, 0, 0, 0);
+
+      await request(app)
+        .post('/reservations')
+        .send({at: reservationAt.toISOString(), email: 'guest@example.com', name: 'Test Guest', quantity: 10})
+        .expect(201);
+
+      await request(app)
+        .get('/reservations/calendar')
+        .query({from: from.toISOString(), to: to.toISOString(), quantity: '1'})
+        .expect(200)
+        .expect({available: [new Date(from.getTime() + 90 * 60_000).toISOString()]});
+    } finally {
+      repository.mockRestore();
+    }
+  });
 });

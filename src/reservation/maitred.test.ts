@@ -148,6 +148,22 @@ describe('Maître de Salle', () => {
     });
 
     describe('isAvailableWithFromTO', () => {
+        test('starts on the requested date at the end of a long month', () => {
+            jest.useFakeTimers().setSystemTime(new Date(2025, 1, 1, 12, 0));
+            try {
+                const maitreDeSalle = new MaitreDeSalle(
+                    new TimeOfDay(8), new TimeOfDay(20, 30), dayjs.duration({minutes: 100}), [new Table(8)]
+                );
+                const from = new Date(2025, 0, 31, 12, 0);
+                const to = new Date(2025, 0, 31, 13, 0);
+
+                expect(maitreDeSalle.getAvailableDates(from, to, [], 4))
+                    .toEqual([from, new Date(2025, 0, 31, 12, 30)]);
+            } finally {
+                jest.useRealTimers();
+            }
+        });
+
         test('return multiple available dates for a given date range and quantity', async () => {
             const tables = [new Table(8)];
             const maitreDeSalle = new MaitreDeSalle(new TimeOfDay(8), new TimeOfDay(20, 30), dayjs.duration({minutes: 100}), tables);
